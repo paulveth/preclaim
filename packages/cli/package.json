@@ -1,11 +1,14 @@
 {
   "name": "preclaim",
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "description": "AI File Coordination Layer — predictive file locking for AI coding agents",
   "type": "module",
   "bin": {
-    "preclaim": "./dist/index.js"
+    "preclaim": "dist/index.js"
   },
-  "main": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
