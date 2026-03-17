@@ -1,4 +1,4 @@
-import { loadCredentials, type PreclaimCredentials } from '@preclaim/core';
+import { loadCredentials, refreshCredentials, type PreclaimCredentials } from '@preclaim/core';
 
 export async function requireAuth(): Promise<PreclaimCredentials> {
   const creds = await loadCredentials();
@@ -7,10 +7,15 @@ export async function requireAuth(): Promise<PreclaimCredentials> {
     process.exit(1);
   }
 
-  // Check expiry
-  if (new Date(creds.expiresAt) < new Date()) {
-    console.error('Session expired. Run `preclaim login` to re-authenticate.');
-    process.exit(1);
+  // 60s marge voor clock skew
+  const expiresAt = new Date(creds.expiresAt).getTime();
+  if (Date.now() >= expiresAt - 60_000) {
+    const refreshed = await refreshCredentials();
+    if (!refreshed) {
+      console.error('Session expired. Run `preclaim login` to re-authenticate.');
+      process.exit(1);
+    }
+    return refreshed;
   }
 
   return creds;

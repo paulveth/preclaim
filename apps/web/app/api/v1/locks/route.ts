@@ -1,15 +1,17 @@
 import { NextRequest } from 'next/server';
 import { getAuthUser, unauthorized } from '../../../../lib/auth';
-import type { ClaimRequest, ReleaseRequest } from '@preclaim/core';
+import { ClaimRequestSchema, ReleaseRequestSchema } from '../../../../lib/schemas';
 
 // POST /api/v1/locks — Claim a file lock
 export async function POST(req: NextRequest) {
-  const start = Date.now();
-
   const auth = await getAuthUser(req);
   if (!auth) return unauthorized();
 
-  const body = await req.json() as ClaimRequest;
+  const parsed = ClaimRequestSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return Response.json({ error: parsed.error.flatten() }, { status: 400 });
+  }
+  const body = parsed.data;
 
   const { data, error } = await auth.supabase.rpc('claim_file', {
     p_project_id: body.project_id,
@@ -55,7 +57,11 @@ export async function DELETE(req: NextRequest) {
   const auth = await getAuthUser(req);
   if (!auth) return unauthorized();
 
-  const body = await req.json() as ReleaseRequest;
+  const parsed = ReleaseRequestSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return Response.json({ error: parsed.error.flatten() }, { status: 400 });
+  }
+  const body = parsed.data;
 
   // Get locks to release (for history logging)
   let selectQuery = auth.supabase

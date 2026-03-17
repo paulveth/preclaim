@@ -1,16 +1,17 @@
 import { NextRequest } from 'next/server';
 import { getAuthUser, unauthorized } from '../../../../lib/auth';
+import { OnboardRequestSchema } from '../../../../lib/schemas';
 
 // POST /api/v1/onboard — Create org + project for a new user
 export async function POST(req: NextRequest) {
   const auth = await getAuthUser(req);
   if (!auth) return unauthorized();
 
-  const body = await req.json() as { project_name: string; project_slug: string };
-
-  if (!body.project_name || !body.project_slug) {
-    return Response.json({ error: 'project_name and project_slug required' }, { status: 400 });
+  const parsed = OnboardRequestSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return Response.json({ error: parsed.error.flatten() }, { status: 400 });
   }
+  const body = parsed.data;
 
   // Check if user already has a profile with an org
   const { data: profile } = await auth.supabase

@@ -1,12 +1,8 @@
 import { createServer, type Server } from 'node:http';
-import { writeFile, mkdir } from 'node:fs/promises';
-import { dirname } from 'node:path';
-import { getCredentialsPath, findConfig } from '@preclaim/core';
-
-const SUPABASE_URL = 'https://aawbukcvngdffueowjsa.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhd2J1a2N2bmdkZmZ1ZW93anNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3NjI2NTcsImV4cCI6MjA4OTMzODY1N30.pwAyjgnbdoZmmJdsG2jF0nbvT4hueb8UZvstsdYhFFs';
+import { getSupabaseConfig, saveCredentials } from '@preclaim/core';
 
 export async function loginCommand() {
+  const supabaseConfig = getSupabaseConfig();
   const server = createServer();
 
   const port = await new Promise<number>((resolve) => {
@@ -16,7 +12,7 @@ export async function loginCommand() {
   });
 
   const redirectTo = `http://localhost:${port}/callback`;
-  const oauthUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=github&redirect_to=${encodeURIComponent(redirectTo)}`;
+  const oauthUrl = `${supabaseConfig.url}/auth/v1/authorize?provider=github&redirect_to=${encodeURIComponent(redirectTo)}`;
 
   console.log('Opening browser for GitHub authentication...');
   console.log(`If browser doesn't open, visit:\n${oauthUrl}\n`);
@@ -25,17 +21,18 @@ export async function loginCommand() {
   const openCmd = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open';
   exec(`${openCmd} "${oauthUrl}"`);
 
-  await handleAuthCallback(server);
+  await handleAuthCallback(server, supabaseConfig);
 }
 
-function handleAuthCallback(server: Server): Promise<void> {
+function handleAuthCallback(
+  server: Server,
+  supabase: { url: string; anonKey: string },
+): Promise<void> {
   return new Promise((resolve, reject) => {
     server.on('request', async (req, res) => {
       const url = new URL(req.url!, `http://localhost`);
 
       if (url.pathname === '/callback') {
-        // Supabase implicit flow: tokens come in hash fragment.
-        // Serve a page that extracts them and POSTs to /token.
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(`<!DOCTYPE html><html><body>
 <h1>Logging in to Preclaim...</h1>
@@ -68,10 +65,10 @@ if (access_token) {
             const { access_token, refresh_token, expires_in } = JSON.parse(body);
 
             // Get user info
-            const userRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+            const userRes = await fetch(`${supabase.url}/auth/v1/user`, {
               headers: {
                 'Authorization': `Bearer ${access_token}`,
-                'apikey': SUPABASE_ANON_KEY,
+                'apikey': supabase.anonKey,
               },
             });
 
@@ -79,10 +76,7 @@ if (access_token) {
 
             const user = await userRes.json() as { id: string; email?: string };
 
-            // Save credentials
-            const credPath = getCredentialsPath();
-            await mkdir(dirname(credPath), { recursive: true });
-            await writeFile(credPath, JSON.stringify({
+            await saveCredentials({
               accessToken: access_token,
               refreshToken: refresh_token,
               expiresAt: new Date(Date.now() + parseInt(expires_in) * 1000).toISOString(),
@@ -91,7 +85,7 @@ if (access_token) {
                 email: user.email ?? '',
                 orgId: '',
               },
-            }, null, 2) + '\n', { mode: 0o600 });
+            });
 
             res.writeHead(200);
             res.end('ok');
@@ -113,8 +107,7 @@ if (access_token) {
 
     setTimeout(() => {
       console.error('Login timed out.');
-      server.close();
-      process.exit(1);
+      server.close(() => process.exit(1));
     }, 120_000);
   });
 }

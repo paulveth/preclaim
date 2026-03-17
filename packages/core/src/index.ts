@@ -1,5 +1,5 @@
 export { PreclaimClient } from './client.js';
-export { findConfig, loadCredentials, getCredentialsPath, defaultConfig } from './config.js';
+export { findConfig, loadCredentials, getCredentialsPath, defaultConfig, getSupabaseConfig, saveCredentials, refreshCredentials } from './config.js';
 export type {
   Organization,
   Profile,

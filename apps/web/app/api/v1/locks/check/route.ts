@@ -1,13 +1,17 @@
 import { NextRequest } from 'next/server';
 import { getAuthUser, unauthorized } from '../../../../../lib/auth';
-import type { BatchCheckRequest } from '@preclaim/core';
+import { BatchCheckRequestSchema } from '../../../../../lib/schemas';
 
 // POST /api/v1/locks/check — Batch check file locks
 export async function POST(req: NextRequest) {
   const auth = await getAuthUser(req);
   if (!auth) return unauthorized();
 
-  const body = await req.json() as BatchCheckRequest;
+  const parsed = BatchCheckRequestSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return Response.json({ error: parsed.error.flatten() }, { status: 400 });
+  }
+  const body = parsed.data;
 
   const { data, error } = await auth.supabase
     .from('locks')

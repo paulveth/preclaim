@@ -1,13 +1,17 @@
 import { NextRequest } from 'next/server';
 import { getAuthUser, unauthorized } from '../../../../lib/auth';
-import type { SessionRegisterRequest } from '@preclaim/core';
+import { SessionRegisterRequestSchema, SessionDeleteRequestSchema } from '../../../../lib/schemas';
 
 // POST /api/v1/sessions — Register a new session
 export async function POST(req: NextRequest) {
   const auth = await getAuthUser(req);
   if (!auth) return unauthorized();
 
-  const body = await req.json() as SessionRegisterRequest;
+  const parsed = SessionRegisterRequestSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return Response.json({ error: parsed.error.flatten() }, { status: 400 });
+  }
+  const body = parsed.data;
 
   const { error } = await auth.supabase
     .from('sessions')
@@ -32,7 +36,22 @@ export async function DELETE(req: NextRequest) {
   const auth = await getAuthUser(req);
   if (!auth) return unauthorized();
 
-  const body = await req.json() as { session_id: string };
+  const parsed = SessionDeleteRequestSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return Response.json({ error: parsed.error.flatten() }, { status: 400 });
+  }
+  const body = parsed.data;
+
+  // Verify session ownership (defense in depth, RLS is the vangnet)
+  const { data: session } = await auth.supabase
+    .from('sessions')
+    .select('user_id')
+    .eq('id', body.session_id)
+    .single();
+
+  if (!session || session.user_id !== auth.user.id) {
+    return Response.json({ error: 'Forbidden' }, { status: 403 });
+  }
 
   // Release all locks for this session (with history logging)
   const { data: locks } = await auth.supabase
