@@ -57,41 +57,45 @@ export async function DELETE(req: NextRequest) {
 
   const body = await req.json() as ReleaseRequest;
 
-  let query = auth.supabase
-    .from('locks')
-    .delete()
-    .eq('project_id', body.project_id)
-    .eq('session_id', body.session_id);
-
-  if (body.file_path) {
-    query = query.eq('file_path', body.file_path);
-  }
-
-  // Log releases before deleting
-  const { data: locksToRelease } = await auth.supabase
+  // Get locks to release (for history logging)
+  let selectQuery = auth.supabase
     .from('locks')
     .select('*')
     .eq('project_id', body.project_id)
     .eq('session_id', body.session_id);
 
-  if (locksToRelease && locksToRelease.length > 0) {
-    const historyEntries = locksToRelease
-      .filter(l => !body.file_path || l.file_path === body.file_path)
-      .map(l => ({
-        project_id: l.project_id,
-        file_path: l.file_path,
-        user_id: l.user_id,
-        session_id: l.session_id,
-        provider: 'claude-code',
-        action: 'release' as const,
-      }));
-
-    if (historyEntries.length > 0) {
-      await auth.supabase.from('lock_history').insert(historyEntries);
-    }
+  if (body.file_path) {
+    selectQuery = selectQuery.eq('file_path', body.file_path);
   }
 
-  const { error, count } = await query.select();
+  const { data: locksToRelease } = await selectQuery;
+
+  // Log releases to history
+  if (locksToRelease && locksToRelease.length > 0) {
+    const historyEntries = locksToRelease.map(l => ({
+      project_id: l.project_id,
+      file_path: l.file_path,
+      user_id: l.user_id,
+      session_id: l.session_id,
+      provider: 'claude-code',
+      action: 'release' as const,
+    }));
+
+    await auth.supabase.from('lock_history').insert(historyEntries);
+  }
+
+  // Delete locks with exact count
+  let deleteQuery = auth.supabase
+    .from('locks')
+    .delete({ count: 'exact' })
+    .eq('project_id', body.project_id)
+    .eq('session_id', body.session_id);
+
+  if (body.file_path) {
+    deleteQuery = deleteQuery.eq('file_path', body.file_path);
+  }
+
+  const { error, count } = await deleteQuery;
 
   if (error) {
     return Response.json({ error: error.message }, { status: 500 });

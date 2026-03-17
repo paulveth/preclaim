@@ -2,6 +2,7 @@
 // PreToolUse hook — the gatekeeper
 // Intercepts Edit/Write/MultiEdit tool calls, claims file locks
 
+import { resolve, relative, dirname } from 'node:path';
 import { PreclaimClient, findConfig, loadCredentials } from '@preclaim/core';
 import { readHookInput, writeHookOutput } from '../lib/hook-io.js';
 import { minimatch } from 'minimatch';
@@ -29,8 +30,12 @@ async function main() {
       return; // No config = allow (not a preclaim project)
     }
 
-    // Check ignore patterns
-    const relativePath = filePath.startsWith('/') ? filePath : filePath;
+    // Normalize path: always relative to project root
+    // /Users/paul/project/src/file.ts en src/file.ts worden dezelfde lock
+    const projectRoot = dirname(found.configPath);
+    const absolutePath = resolve(projectRoot, filePath);
+    const relativePath = relative(projectRoot, absolutePath);
+
     if (found.config.ignore.some(pattern => minimatch(relativePath, pattern))) {
       return; // Ignored file = allow
     }
