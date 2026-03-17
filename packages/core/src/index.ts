@@ -1,0 +1,26 @@
+export { PreclaimClient } from './client.js';
+export { findConfig, loadCredentials, getCredentialsPath, defaultConfig } from './config.js';
+export type {
+  Organization,
+  Profile,
+  Project,
+  Session,
+  Lock,
+  LockHolder,
+  LockHistoryEntry,
+  ClaimStatus,
+  ClaimResult,
+  ClaimRequest,
+  BatchCheckRequest,
+  BatchCheckResult,
+  HeartbeatRequest,
+  HeartbeatResult,
+  SessionRegisterRequest,
+  ReleaseRequest,
+  ReleaseResult,
+  PreclaimConfig,
+  PreclaimCredentials,
+  ApiResponse,
+  HookInput,
+  HookResult,
+} from './types.js';

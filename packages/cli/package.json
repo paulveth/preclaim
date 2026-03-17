@@ -1,0 +1,24 @@
+{
+  "name": "preclaim",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "preclaim": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@preclaim/core": "workspace:*",
+    "commander": "^13.1.0",
+    "minimatch": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.8.0"
+  }
+}

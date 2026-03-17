@@ -1,0 +1,69 @@
+import { NextRequest } from 'next/server';
+import { getAuthUser, unauthorized } from '../../../../lib/auth';
+import type { SessionRegisterRequest } from '@preclaim/core';
+
+// POST /api/v1/sessions — Register a new session
+export async function POST(req: NextRequest) {
+  const auth = await getAuthUser(req);
+  if (!auth) return unauthorized();
+
+  const body = await req.json() as SessionRegisterRequest;
+
+  const { error } = await auth.supabase
+    .from('sessions')
+    .upsert({
+      id: body.session_id,
+      user_id: auth.user.id,
+      project_id: body.project_id,
+      provider: body.provider ?? 'claude-code',
+      last_heartbeat: new Date().toISOString(),
+      metadata: body.metadata ?? {},
+    });
+
+  if (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+
+  return Response.json({ data: { session_id: body.session_id } }, { status: 201 });
+}
+
+// DELETE /api/v1/sessions — End session and release all locks
+export async function DELETE(req: NextRequest) {
+  const auth = await getAuthUser(req);
+  if (!auth) return unauthorized();
+
+  const body = await req.json() as { session_id: string };
+
+  // Release all locks for this session (with history logging)
+  const { data: locks } = await auth.supabase
+    .from('locks')
+    .select('*')
+    .eq('session_id', body.session_id);
+
+  if (locks && locks.length > 0) {
+    const historyEntries = locks.map(l => ({
+      project_id: l.project_id,
+      file_path: l.file_path,
+      user_id: l.user_id,
+      session_id: l.session_id,
+      provider: 'claude-code',
+      action: 'release' as const,
+    }));
+
+    await auth.supabase.from('lock_history').insert(historyEntries);
+
+    await auth.supabase
+      .from('locks')
+      .delete()
+      .eq('session_id', body.session_id);
+  }
+
+  // Delete session
+  await auth.supabase
+    .from('sessions')
+    .delete()
+    .eq('id', body.session_id)
+    .eq('user_id', auth.user.id);
+
+  return Response.json({ data: { released: locks?.length ?? 0 } });
+}
