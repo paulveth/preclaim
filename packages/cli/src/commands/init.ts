@@ -14,7 +14,7 @@ export async function initCommand(opts: { backend?: string; projectId?: string }
     // File doesn't exist, proceed
   }
 
-  const backend = opts.backend ?? 'https://preclaim.vercel.app';
+  const backend = opts.backend ?? 'https://preclaim.dev';
   const projectId = opts.projectId ?? `proj_${crypto.randomUUID().slice(0, 8)}`;
 
   const config = defaultConfig(projectId, backend);
