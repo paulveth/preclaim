@@ -1,7 +1,7 @@
 import { resolveContext } from '../lib/client-factory.js';
 
 export async function lockCommand(filePath: string, opts: { session?: string; ttl?: string }) {
-  const { client, config, credentials } = await resolveContext();
+  const { client, config } = await resolveContext();
   const sessionId = opts.session ?? `manual_${crypto.randomUUID().slice(0, 8)}`;
   const ttl = opts.ttl ? parseInt(opts.ttl, 10) : config.ttl;
 

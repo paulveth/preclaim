@@ -1,6 +1,6 @@
 import { writeFile, readFile } from 'node:fs/promises';
 import { join, basename } from 'node:path';
-import { defaultConfig, loadCredentials, PreclaimClient } from '@preclaim/core';
+import { defaultConfig, loadCredentials, saveCredentials } from '@preclaim/core';
 import { loginCommand } from './login.js';
 
 const DEFAULT_BACKEND = 'https://preclaim.dev';
@@ -49,12 +49,6 @@ export async function initCommand(opts: { backend?: string; projectId?: string }
   console.log(`Setting up Preclaim for "${projectName}"...`);
 
   // Call onboard API
-  const client = new PreclaimClient({
-    baseUrl: backend,
-    accessToken: creds.accessToken,
-    timeoutMs: 10000,
-  });
-
   const res = await fetch(`${backend}/api/v1/onboard`, {
     method: 'POST',
     headers: {
@@ -84,12 +78,7 @@ export async function initCommand(opts: { backend?: string; projectId?: string }
   // Update credentials with org_id
   if (creds.user.orgId !== data.org_id) {
     creds.user.orgId = data.org_id;
-    const { getCredentialsPath } = await import('@preclaim/core');
-    const { writeFile: wf, mkdir } = await import('node:fs/promises');
-    const { dirname } = await import('node:path');
-    const credPath = getCredentialsPath();
-    await mkdir(dirname(credPath), { recursive: true });
-    await wf(credPath, JSON.stringify(creds, null, 2) + '\n', { mode: 0o600 });
+    await saveCredentials(creds);
   }
 
   // Write config

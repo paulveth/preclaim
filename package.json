@@ -4,13 +4,22 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
-    "lint": "turbo lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
     "typecheck": "turbo typecheck",
     "clean": "turbo clean"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@typescript-eslint/eslint-plugin": "^8.57.1",
+    "@typescript-eslint/parser": "^8.57.1",
+    "@vitest/coverage-v8": "^4.1.0",
+    "eslint": "^10.0.3",
     "turbo": "^2.5.0",
-    "typescript": "^5.8.0"
+    "typescript": "^5.8.0",
+    "typescript-eslint": "^8.57.1",
+    "vitest": "^4.1.0"
   },
   "packageManager": "pnpm@10.6.5"
 }

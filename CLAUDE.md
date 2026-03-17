@@ -3,29 +3,53 @@
 AI File Coordination Layer — predictieve file locking voor AI coding agents.
 
 ## Stack
-- pnpm monorepo + Turborepo
-- Supabase (database + auth + realtime)
-- Next.js (Vercel serverless API + dashboard)
-- TypeScript everywhere
 
-## Build & Dev
+| Laag      | Technologie                          |
+|-----------|--------------------------------------|
+| Runtime   | Node.js + TypeScript (ES2022 strict) |
+| API       | Next.js API routes / Vercel          |
+| DB        | Supabase (PostgreSQL + Auth + RLS)   |
+| CLI       | Node.js, npm package                 |
+| Validatie | Zod (API routes)                     |
+| Test      | Vitest                               |
+
+## Monorepo
+
+```
+packages/
+  core/    # Gedeelde types, API client, config (@preclaim/core)
+  cli/     # CLI tool + Claude Code hooks (preclaim)
+  db/      # Supabase types + migraties (@preclaim/db)
+apps/
+  web/     # Next.js API routes + dashboard (@preclaim/web)
+```
+
+## Commando's
+
 ```bash
 pnpm install        # Install dependencies
 pnpm build          # Build all packages
 pnpm dev            # Dev mode
+pnpm test           # Tests draaien
+pnpm lint           # ESLint
+pnpm typecheck      # TypeScript check
 ```
 
-## Architecture
-- `packages/core` — shared types + API client (@preclaim/core)
-- `packages/cli` — CLI tool + Claude Code hooks (preclaim)
-- `packages/db` — Supabase types + migrations (@preclaim/db)
-- `apps/web` — Next.js app (API + dashboard + marketing)
-
 ## Key Patterns
-- Atomic lock operations via Supabase RPC (`claim_file`), never direct INSERT
-- Fail-open on network errors (hooks must not block development)
-- Hook latency must be < 2 seconds
-- Always `await` async operations, no fire-and-forget
-- RLS everywhere with helper functions
-- IF NOT EXISTS in all migrations
+
+- Atomic lock operations via Supabase RPC (`claim_file`), nooit directe INSERT
+- Fail-open on network errors (hooks mogen development nooit blokkeren)
+- Hook latency < 2 seconden
+- Altijd `await` op async operaties, geen fire-and-forget
+- RLS op elke tabel, geen uitzonderingen
+- `SECURITY DEFINER` + `SET search_path = public` op RPCs die meerdere tabellen raken
+- IF NOT EXISTS in alle migraties
 - Realtime + polling fallback (5s)
+
+## Kritieke Regels
+
+- `FOR UPDATE` (blokkend) voor file claims, NOOIT `SKIP LOCKED`
+- Lock paths altijd relatief ten opzichte van project root
+- Token refresh voor sessies > 1 uur
+- Bulk operations voor heartbeat updates, NOOIT N+1 loops
+- Zod validatie op alle API routes (systeemgrenzen)
