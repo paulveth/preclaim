@@ -9,3 +9,4 @@ dist/
 .preclaim.pid
 ~/.preclaim/
 .temp/
+.vercel
