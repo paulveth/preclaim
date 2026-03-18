@@ -31,28 +31,28 @@ export async function installHooksCommand() {
       matcher: '',
       hooks: [{
         type: 'command',
-        command: 'npx --yes preclaim hook pre-tool-use',
+        command: 'preclaim hook pre-tool-use',
       }],
     }],
     PostToolUse: [{
       matcher: '',
       hooks: [{
         type: 'command',
-        command: 'npx --yes preclaim hook post-tool-use',
+        command: 'preclaim hook post-tool-use',
       }],
     }],
     Stop: [{
       matcher: '',
       hooks: [{
         type: 'command',
-        command: 'npx --yes preclaim hook stop',
+        command: 'preclaim hook stop',
       }],
     }],
     SessionStart: [{
       matcher: '',
       hooks: [{
         type: 'command',
-        command: 'npx --yes preclaim hook session-start',
+        command: 'preclaim hook session-start',
       }],
     }],
   };
