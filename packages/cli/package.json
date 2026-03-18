@@ -1,6 +1,6 @@
 {
   "name": "preclaim",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "AI File Coordination Layer — predictive file locking for AI coding agents",
   "type": "module",
   "bin": {
@@ -16,7 +16,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@preclaim/core": "workspace:*",
+    "@preclaim/core": "^0.2.0",
     "commander": "^13.1.0",
     "minimatch": "^10.0.0"
   },
