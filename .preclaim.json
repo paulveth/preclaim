@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "projectId": "00df71e3-9292-42c0-a7db-74a58a1283b6",
+  "backend": "https://preclaim.dev",
+  "ttl": 30,
+  "failOpen": true,
+  "ignore": [
+    "*.md",
+    "package-lock.json",
+    "*.test.ts"
+  ]
+}
