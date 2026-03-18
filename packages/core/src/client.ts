@@ -107,4 +107,15 @@ export class PreclaimClient {
   async getVersion(): Promise<ApiResponse<VersionResult>> {
     return this.request<VersionResult>('/version');
   }
+
+  async ping(): Promise<{ ok: boolean; latencyMs: number; error?: string }> {
+    const start = Date.now();
+    const res = await this.getVersion();
+    const latencyMs = Date.now() - start;
+
+    if (res.error) {
+      return { ok: false, latencyMs, error: res.error };
+    }
+    return { ok: true, latencyMs };
+  }
 }
