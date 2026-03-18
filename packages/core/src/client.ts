@@ -10,6 +10,7 @@ import type {
   ReleaseRequest,
   ReleaseResult,
   Lock,
+  VersionResult,
 } from './types.js';
 
 export class PreclaimClient {
@@ -98,5 +99,9 @@ export class PreclaimClient {
       method: 'DELETE',
       body: JSON.stringify({ session_id: sessionId }),
     });
+  }
+
+  async getVersion(): Promise<ApiResponse<VersionResult>> {
+    return this.request<VersionResult>('/version');
   }
 }

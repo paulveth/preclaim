@@ -121,6 +121,11 @@ export interface ReleaseResult {
   released: number;
 }
 
+// === Version ===
+export interface VersionResult {
+  version: string;
+}
+
 // === Config ===
 export interface PreclaimConfig {
   version: number;
