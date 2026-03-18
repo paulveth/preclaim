@@ -6,7 +6,7 @@ import { spawn } from 'node:child_process';
 import { writeFile } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PreclaimClient, findConfig, loadCredentials } from '@preclaim/core';
+import { PreclaimClient, findConfig, loadCredentials, refreshCredentials } from '@preclaim/core';
 import { readHookInput, writeHookOutput } from '../lib/hook-io.js';
 
 async function main() {
@@ -16,12 +16,21 @@ async function main() {
     const found = await findConfig();
     if (!found) return;
 
-    const creds = await loadCredentials();
+    let creds = await loadCredentials();
     if (!creds) {
       writeHookOutput({
         systemMessage: '[Preclaim] Not authenticated. File locking disabled. Run `preclaim login` to enable.',
       });
       return;
+    }
+
+    // Refresh token if within 60s of expiry
+    const expiresAt = new Date(creds.expiresAt).getTime();
+    if (Date.now() >= expiresAt - 60_000) {
+      const refreshed = await refreshCredentials();
+      if (refreshed) {
+        creds = refreshed;
+      }
     }
 
     const client = new PreclaimClient({

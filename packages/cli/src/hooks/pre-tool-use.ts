@@ -3,7 +3,7 @@
 // Intercepts Edit/Write/MultiEdit tool calls, claims file locks
 
 import { resolve, relative, dirname } from 'node:path';
-import { PreclaimClient, findConfig, loadCredentials } from '@preclaim/core';
+import { PreclaimClient, findConfig, loadCredentials, refreshCredentials } from '@preclaim/core';
 import { readHookInput, writeHookOutput } from '../lib/hook-io.js';
 import { minimatch } from 'minimatch';
 
@@ -40,8 +40,8 @@ async function main() {
       return; // Ignored file = allow
     }
 
-    // Load credentials
-    const creds = await loadCredentials();
+    // Load credentials, refresh if expired
+    let creds = await loadCredentials();
     if (!creds) {
       if (found.config.failOpen) return;
       writeHookOutput({
@@ -49,6 +49,16 @@ async function main() {
         reason: 'Preclaim: not authenticated. Run `preclaim login`.',
       });
       return;
+    }
+
+    // Refresh token if within 60s of expiry
+    const expiresAt = new Date(creds.expiresAt).getTime();
+    if (Date.now() >= expiresAt - 60_000) {
+      const refreshed = await refreshCredentials();
+      if (refreshed) {
+        creds = refreshed;
+      }
+      // If refresh fails, try with old token anyway
     }
 
     // Claim file
