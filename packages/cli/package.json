@@ -20,6 +20,11 @@
     "commander": "^13.1.0",
     "minimatch": "^10.0.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/paulveth/preclaim.git",
+    "directory": "packages/cli"
+  },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "typescript": "^5.8.0"
