@@ -16,7 +16,7 @@ const program = new Command();
 program
   .name('preclaim')
   .description('AI File Coordination Layer — predictive file locking for AI coding agents')
-  .version('0.2.9');
+  .version('0.3.0');
 
 program
   .command('init')
