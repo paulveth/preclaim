@@ -22,7 +22,7 @@ export async function initCommand(opts: { backend: string; projectId?: string })
     const config = defaultConfig(opts.projectId, backend);
     await writeFile(configPath, JSON.stringify(config, null, 2) + '\n');
     console.log(`Created .preclaim.json (project: ${opts.projectId})`);
-    printNextSteps();
+    printNextSteps(backend);
     return;
   }
 
@@ -84,13 +84,17 @@ export async function initCommand(opts: { backend: string; projectId?: string })
   await writeFile(configPath, JSON.stringify(config, null, 2) + '\n');
 
   console.log(`\nCreated .preclaim.json`);
-  printNextSteps();
+  printNextSteps(backend);
 }
 
-function printNextSteps() {
+function printNextSteps(backend: string) {
+  const dashboardUrl = backend.replace(/\/api\/v1$/, '').replace(/\/$/, '');
   console.log('');
   console.log('Next steps:');
   console.log('  1. preclaim install-hooks');
   console.log('  2. Commit .preclaim.json to your repo');
   console.log('  3. Open multiple Claude Code terminals — locks are automatic');
+  console.log('');
+  console.log(`Dashboard: ${dashboardUrl}/dashboard`);
+  console.log('View your locks and activity in real-time.');
 }
