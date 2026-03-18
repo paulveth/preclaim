@@ -14,18 +14,30 @@ function LoginForm() {
 
   useEffect(() => {
     const errorParam = searchParams.get('error');
-    if (errorParam) setError('Login failed. Please try again.');
+    const errorDescription = searchParams.get('error_description');
+    if (errorParam) {
+      setError(errorDescription ?? 'Login failed. Please try again.');
+      return;
+    }
 
     const code = searchParams.get('code');
     if (code) {
+      setLoading(true);
       supabase.auth.exchangeCodeForSession(code).then(({ error: authError }) => {
         if (authError) {
           setError(authError.message);
+          setLoading(false);
         } else {
           router.push('/dashboard');
         }
       });
+      return;
     }
+
+    // Already logged in? Redirect to dashboard
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) router.push('/dashboard');
+    });
   }, [searchParams, supabase, router]);
 
   const handleGitHubLogin = async () => {
@@ -35,7 +47,7 @@ function LoginForm() {
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: 'github',
       options: {
-        redirectTo: `${window.location.origin}/api/v1/auth/callback`,
+        redirectTo: `${window.location.origin}/login`,
       },
     });
 
