@@ -34,6 +34,8 @@ jobs:
       - run: pnpm build
       - run: npm publish --access public --provenance
         working-directory: packages/core
+        env:
+          NODE_AUTH_TOKEN: ''
 
   publish-cli:
     if: inputs.package == 'cli' || (inputs.package == 'both' && always())
@@ -55,3 +57,5 @@ jobs:
         run: |
           pnpm pack
           npm publish *.tgz --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ''
