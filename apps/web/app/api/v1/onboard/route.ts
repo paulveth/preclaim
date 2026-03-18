@@ -1,8 +1,11 @@
 import { NextRequest } from 'next/server';
 import { getAuthUser, unauthorized } from '../../../../lib/auth';
+import { createAdminSupabase } from '../../../../lib/supabase';
 import { OnboardRequestSchema } from '../../../../lib/schemas';
 
 // POST /api/v1/onboard — Create org + project for a new user
+// Uses admin client: org/project creation is a privileged operation
+// that new users can't do via RLS (they have no org yet)
 export async function POST(req: NextRequest) {
   const auth = await getAuthUser(req);
   if (!auth) return unauthorized();
@@ -13,8 +16,10 @@ export async function POST(req: NextRequest) {
   }
   const body = parsed.data;
 
+  const admin = createAdminSupabase();
+
   // Check if user already has a profile with an org
-  const { data: profile } = await auth.supabase
+  const { data: profile } = await admin
     .from('profiles')
     .select('id, org_id, email')
     .eq('id', auth.user.id)
@@ -27,7 +32,7 @@ export async function POST(req: NextRequest) {
     const slug = auth.user.email?.split('@')[0] ?? auth.user.id.slice(0, 8);
     const name = auth.user.user_metadata?.full_name ?? auth.user.email ?? 'My Organization';
 
-    const { data: org, error: orgErr } = await auth.supabase
+    const { data: org, error: orgErr } = await admin
       .from('organizations')
       .insert({ name, slug: `${slug}-${Date.now().toString(36)}` })
       .select()
@@ -40,14 +45,14 @@ export async function POST(req: NextRequest) {
     orgId = org.id;
 
     // Link profile to org as admin
-    await auth.supabase
+    await admin
       .from('profiles')
       .update({ org_id: orgId, role: 'admin' })
       .eq('id', auth.user.id);
   }
 
   // Check if project with this slug already exists for this org
-  const { data: existing } = await auth.supabase
+  const { data: existing } = await admin
     .from('projects')
     .select('id')
     .eq('org_id', orgId)
@@ -65,7 +70,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Create project
-  const { data: project, error: projErr } = await auth.supabase
+  const { data: project, error: projErr } = await admin
     .from('projects')
     .insert({
       org_id: orgId,
