@@ -3,9 +3,7 @@ import { join, basename } from 'node:path';
 import { defaultConfig, loadCredentials, saveCredentials } from '@preclaim/core';
 import { loginCommand } from './login.js';
 
-const DEFAULT_BACKEND = 'https://preclaim.dev';
-
-export async function initCommand(opts: { backend?: string; projectId?: string }) {
+export async function initCommand(opts: { backend: string; projectId?: string }) {
   const configPath = join(process.cwd(), '.preclaim.json');
 
   // Check if already exists
@@ -17,7 +15,7 @@ export async function initCommand(opts: { backend?: string; projectId?: string }
     // File doesn't exist, proceed
   }
 
-  const backend = opts.backend ?? DEFAULT_BACKEND;
+  const backend = opts.backend;
 
   // If project ID provided directly, skip onboarding
   if (opts.projectId) {

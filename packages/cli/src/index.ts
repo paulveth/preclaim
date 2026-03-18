@@ -16,12 +16,12 @@ const program = new Command();
 program
   .name('preclaim')
   .description('AI File Coordination Layer — predictive file locking for AI coding agents')
-  .version('0.1.0');
+  .version('0.2.4');
 
 program
   .command('init')
   .description('Initialize Preclaim in the current project')
-  .option('--backend <url>', 'Backend URL', 'https://preclaim.vercel.app')
+  .option('--backend <url>', 'Backend URL', 'https://preclaim.dev')
   .option('--project-id <id>', 'Project ID')
   .action(initCommand);
 
