@@ -20,10 +20,52 @@
   margin-bottom: 32px;
 }
 
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
 .sectionTitle {
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 16px;
+}
+
+.sectionHeader .sectionTitle {
+  margin-bottom: 0;
+}
+
+.saveButton {
+  font-size: 13px;
+  padding: 6px 16px;
+  border-radius: 8px;
+  border: none;
+  background: var(--green);
+  color: var(--black);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.saveButton:hover:not(:disabled) {
+  box-shadow: 0 0 16px rgba(var(--green-rgb), 0.3);
+}
+
+.saveButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.saveSuccess {
+  font-size: 13px;
+  color: var(--green);
+}
+
+.saveError {
+  font-size: 13px;
+  color: #ff5f57;
 }
 
 /* ─── CARD ─── */
@@ -70,6 +112,50 @@
   background: rgba(255, 255, 255, 0.04);
   padding: 2px 6px;
   border-radius: 4px;
+}
+
+/* ─── INPUTS ─── */
+
+.input {
+  width: 100%;
+  max-width: 360px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--white);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.input:focus {
+  border-color: rgba(var(--green-rgb), 0.3);
+}
+
+.inputMono {
+  composes: input;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.inputSmall {
+  composes: input;
+  width: 80px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  text-align: center;
+}
+
+.ttlRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ttlUnit {
+  font-size: 14px;
+  color: var(--gray-400);
 }
 
 /* ─── COPY ─── */
