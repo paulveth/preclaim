@@ -1,8 +1,5 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import { join } from 'node:path';
 
 interface ClaudeSettings {
   hooks?: Record<string, Array<{
@@ -15,7 +12,6 @@ interface ClaudeSettings {
 }
 
 export async function installHooksCommand() {
-  const hooksDir = join(__dirname, '..', 'hooks');
   const settingsDir = join(process.cwd(), '.claude');
   const settingsPath = join(settingsDir, 'settings.json');
 
@@ -28,33 +24,35 @@ export async function installHooksCommand() {
     // File doesn't exist
   }
 
+  // Use npx to resolve the globally/locally installed preclaim binary
+  // This works regardless of where preclaim is installed
   settings.hooks = {
     PreToolUse: [{
       matcher: '',
       hooks: [{
         type: 'command',
-        command: `node ${join(hooksDir, 'pre-tool-use.js')}`,
+        command: 'npx --yes preclaim hook pre-tool-use',
       }],
     }],
     PostToolUse: [{
       matcher: '',
       hooks: [{
         type: 'command',
-        command: `node ${join(hooksDir, 'post-tool-use.js')}`,
+        command: 'npx --yes preclaim hook post-tool-use',
       }],
     }],
     Stop: [{
       matcher: '',
       hooks: [{
         type: 'command',
-        command: `node ${join(hooksDir, 'stop.js')}`,
+        command: 'npx --yes preclaim hook stop',
       }],
     }],
     SessionStart: [{
       matcher: '',
       hooks: [{
         type: 'command',
-        command: `node ${join(hooksDir, 'session-start.js')}`,
+        command: 'npx --yes preclaim hook session-start',
       }],
     }],
   };

@@ -71,4 +71,22 @@ program
   .description('Install Claude Code hooks in the current project')
   .action(installHooksCommand);
 
+// Internal: hook runner for Claude Code hooks via npx
+const hook = program
+  .command('hook')
+  .description('Run a Claude Code hook (internal)');
+
+hook.command('pre-tool-use').action(async () => {
+  await import('./hooks/pre-tool-use.js');
+});
+hook.command('post-tool-use').action(async () => {
+  await import('./hooks/post-tool-use.js');
+});
+hook.command('session-start').action(async () => {
+  await import('./hooks/session-start.js');
+});
+hook.command('stop').action(async () => {
+  await import('./hooks/stop.js');
+});
+
 program.parse();
