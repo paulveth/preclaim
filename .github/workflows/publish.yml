@@ -34,13 +34,10 @@ jobs:
       - run: pnpm build
       - run: npm publish --access public --provenance
         working-directory: packages/core
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-cli:
-    if: inputs.package == 'cli' || inputs.package == 'both'
+    if: inputs.package == 'cli' || (inputs.package == 'both' && always())
     needs: [publish-core]
-    if: always() && (inputs.package == 'cli' || inputs.package == 'both')
     runs-on: ubuntu-latest
     environment: npm
     steps:
@@ -58,5 +55,3 @@ jobs:
         run: |
           pnpm pack
           npm publish *.tgz --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
