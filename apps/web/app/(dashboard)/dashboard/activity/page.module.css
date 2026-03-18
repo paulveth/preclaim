@@ -1,0 +1,89 @@
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--gray-400);
+  margin-top: 4px;
+}
+
+.projectBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(var(--green-rgb), 0.15);
+  background: rgba(var(--green-rgb), 0.05);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--green);
+}
+
+.projectDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px rgba(var(--green-rgb), 0.5);
+}
+
+/* ─── FILTERS ─── */
+
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.filterButton {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: none;
+  color: var(--gray-400);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.filterButton:hover {
+  color: var(--white);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.filterActive {
+  color: var(--green);
+  border-color: rgba(var(--green-rgb), 0.2);
+  background: rgba(var(--green-rgb), 0.06);
+}
+
+/* ─── PANEL ─── */
+
+.panel {
+  background: var(--gray-950);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .filters {
+    flex-wrap: wrap;
+  }
+}

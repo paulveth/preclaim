@@ -77,6 +77,19 @@
   color: var(--green);
 }
 
+.statSkeleton {
+  height: 48px;
+  width: 60px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
 /* ─── PANELS ─── */
 
 .panel {

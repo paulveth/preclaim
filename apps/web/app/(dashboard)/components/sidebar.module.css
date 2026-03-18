@@ -77,6 +77,19 @@
   margin-top: auto;
 }
 
+.userSkeleton {
+  height: 32px;
+  width: 100%;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
 .userAvatar {
   width: 32px;
   height: 32px;
@@ -92,12 +105,41 @@
   flex-shrink: 0;
 }
 
+.userInfo {
+  flex: 1;
+  min-width: 0;
+}
+
 .userName {
   font-size: 14px;
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .userOrg {
   font-size: 12px;
   color: var(--gray-600);
+}
+
+.signOutButton {
+  background: none;
+  border: none;
+  color: var(--gray-600);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  transition: color 0.15s;
+  flex-shrink: 0;
+}
+
+.signOutButton:hover {
+  color: var(--white);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
 }

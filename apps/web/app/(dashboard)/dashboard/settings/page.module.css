@@ -1,0 +1,141 @@
+.header {
+  margin-bottom: 40px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--gray-400);
+  margin-top: 4px;
+}
+
+/* ─── SECTIONS ─── */
+
+.section {
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* ─── CARD ─── */
+
+.card {
+  background: var(--gray-950);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.field {
+  padding: 20px 24px;
+}
+
+.field:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gray-600);
+  font-weight: 500;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.value {
+  font-size: 15px;
+  color: var(--white);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--gray-200);
+}
+
+.inlineCode {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ─── COPY ─── */
+
+.copyRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.copyButton {
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(var(--green-rgb), 0.2);
+  background: rgba(var(--green-rgb), 0.06);
+  color: var(--green);
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.copyButton:hover {
+  background: rgba(var(--green-rgb), 0.1);
+  border-color: rgba(var(--green-rgb), 0.3);
+}
+
+/* ─── CODE BLOCK ─── */
+
+.hint {
+  font-size: 13px;
+  color: var(--gray-400);
+  margin-bottom: 12px;
+}
+
+.codeBlock {
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.codeBlock .copyButton {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.pre {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--gray-200);
+  white-space: pre;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+
+/* ─── ROLE BADGE ─── */
+
+.roleBadge {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  background: rgba(var(--green-rgb), 0.08);
+  color: var(--green);
+  font-family: var(--font-mono);
+  text-transform: capitalize;
+}

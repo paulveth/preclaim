@@ -2,6 +2,32 @@ import { NextRequest } from 'next/server';
 import { getAuthUser, unauthorized } from '../../../../lib/auth';
 import { SessionRegisterRequestSchema, SessionDeleteRequestSchema } from '../../../../lib/schemas';
 
+// GET /api/v1/sessions?project_id=xxx — List active sessions
+export async function GET(req: NextRequest) {
+  const auth = await getAuthUser(req);
+  if (!auth) return unauthorized();
+
+  const projectId = req.nextUrl.searchParams.get('project_id');
+  if (!projectId) {
+    return Response.json({ error: 'project_id required' }, { status: 400 });
+  }
+
+  const { data, error } = await auth.supabase
+    .from('sessions')
+    .select(`
+      *,
+      profiles!inner ( name, email, avatar_url )
+    `)
+    .eq('project_id', projectId)
+    .order('last_heartbeat', { ascending: false });
+
+  if (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+
+  return Response.json({ data });
+}
+
 // POST /api/v1/sessions — Register a new session
 export async function POST(req: NextRequest) {
   const auth = await getAuthUser(req);
@@ -69,20 +95,31 @@ export async function DELETE(req: NextRequest) {
       action: 'release' as const,
     }));
 
-    await auth.supabase.from('lock_history').insert(historyEntries);
+    const { error: historyError } = await auth.supabase.from('lock_history').insert(historyEntries);
+    if (historyError) {
+      return Response.json({ error: historyError.message }, { status: 500 });
+    }
 
-    await auth.supabase
+    const { error: deleteLocksError } = await auth.supabase
       .from('locks')
       .delete()
       .eq('session_id', body.session_id);
+
+    if (deleteLocksError) {
+      return Response.json({ error: deleteLocksError.message }, { status: 500 });
+    }
   }
 
   // Delete session
-  await auth.supabase
+  const { error: deleteSessionError } = await auth.supabase
     .from('sessions')
     .delete()
     .eq('id', body.session_id)
     .eq('user_id', auth.user.id);
+
+  if (deleteSessionError) {
+    return Response.json({ error: deleteSessionError.message }, { status: 500 });
+  }
 
   return Response.json({ data: { released: locks?.length ?? 0 } });
 }

@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from '../providers';
 import styles from './sidebar.module.css';
 
 const navItems = [
@@ -13,6 +14,17 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { profile, organization, loading, signOut } = useAuth();
+
+  const displayName = profile?.name ?? profile?.email ?? '...';
+  const initials = displayName.charAt(0).toUpperCase();
+  const orgName = organization?.slug ?? '...';
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push('/login');
+  };
 
   return (
     <aside className={styles.sidebar}>
@@ -33,11 +45,24 @@ export function Sidebar() {
         ))}
       </nav>
       <div className={styles.userSection}>
-        <div className={styles.userAvatar}>P</div>
-        <div>
-          <div className={styles.userName}>Paul Veth</div>
-          <div className={styles.userOrg}>acme-app</div>
-        </div>
+        {loading ? (
+          <div className={styles.userSkeleton} />
+        ) : (
+          <>
+            <div className={styles.userAvatar}>{initials}</div>
+            <div className={styles.userInfo}>
+              <div className={styles.userName}>{displayName}</div>
+              <div className={styles.userOrg}>{orgName}</div>
+            </div>
+            <button
+              className={styles.signOutButton}
+              onClick={handleSignOut}
+              title="Sign out"
+            >
+              &#x2192;
+            </button>
+          </>
+        )}
       </div>
     </aside>
   );
