@@ -1,0 +1,12 @@
+-- Optional: pg_cron cleanup (requires Supabase Pro)
+-- Uncomment below if you have pg_cron enabled.
+-- This runs cleanup_expired_locks() every 5 minutes.
+--
+-- SELECT cron.schedule(
+--   'preclaim-cleanup-expired-locks',
+--   '*/5 * * * *',
+--   $$SELECT cleanup_expired_locks()$$
+-- );
+--
+-- Without pg_cron, expired locks are cleaned up probabilistically
+-- via the heartbeat endpoint (~10% of heartbeat requests).

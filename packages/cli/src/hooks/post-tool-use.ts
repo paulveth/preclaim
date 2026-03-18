@@ -15,8 +15,10 @@ async function main() {
     const command = input.tool_input?.command as string | undefined;
     if (!command) return;
 
-    // Detect git commit (not amend, not just `git commit --help`)
-    const isCommit = /\bgit\s+commit\b/.test(command) && !/--help/.test(command);
+    // Detect git commit (not amend, not --help)
+    const isCommit = /\bgit\s+commit\b/.test(command)
+      && !/--help/.test(command)
+      && !/--amend/.test(command);
     if (!isCommit) return;
 
     const found = await findConfig();

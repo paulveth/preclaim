@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { getAuthUser, unauthorized } from '../../../../lib/auth';
 import { HeartbeatRequestSchema } from '../../../../lib/schemas';
+import { createAdminSupabase } from '../../../../lib/supabase';
 
 // POST /api/v1/heartbeat — Extend TTL on all session locks
 export async function POST(req: NextRequest) {
@@ -50,6 +51,16 @@ export async function POST(req: NextRequest) {
       .eq('project_id', project.id);
 
     totalExtended += count ?? 0;
+  }
+
+  // Probabilistic cleanup: ~10% of heartbeats trigger expired lock cleanup
+  if (Math.random() < 0.1) {
+    try {
+      const admin = createAdminSupabase();
+      await admin.rpc('cleanup_expired_locks');
+    } catch {
+      // Non-critical — fail silently
+    }
   }
 
   return Response.json({ data: { extended: totalExtended } });

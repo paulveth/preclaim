@@ -23,6 +23,17 @@ const MAX_FAILURES = 5;
 let failures = 0;
 
 async function heartbeat() {
+  // Check if access token has likely expired (JWT default: 1 hour)
+  // If daemon has been running > 55 min, count it as a failure
+  const uptimeMs = Date.now() - startTime;
+  if (uptimeMs > 55 * 60 * 1000) {
+    failures++;
+    if (failures >= MAX_FAILURES) {
+      process.exit(1);
+    }
+    return;
+  }
+
   const result = await client.heartbeat({ session_id: sessionId! });
 
   if (result.error) {
@@ -34,6 +45,8 @@ async function heartbeat() {
     failures = 0;
   }
 }
+
+const startTime = Date.now();
 
 // Run immediately, then every 60s
 heartbeat();
