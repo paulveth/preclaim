@@ -44,8 +44,11 @@ export class PreclaimClient {
         return { error: `HTTP ${res.status}: ${body}` };
       }
 
-      const data = await res.json() as T;
-      return { data };
+      const body = await res.json() as { data?: T; error?: string };
+      if (body.error) {
+        return { error: body.error };
+      }
+      return { data: body.data as T };
     } catch (err: unknown) {
       const elapsed = Date.now() - start;
       if (err instanceof Error && err.name === 'TimeoutError') {
