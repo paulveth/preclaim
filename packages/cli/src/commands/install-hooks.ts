@@ -41,13 +41,6 @@ export async function installHooksCommand() {
         command: 'preclaim hook post-tool-use',
       }],
     }],
-    Stop: [{
-      matcher: '',
-      hooks: [{
-        type: 'command',
-        command: 'preclaim hook stop',
-      }],
-    }],
     SessionStart: [{
       matcher: '',
       hooks: [{
@@ -65,6 +58,5 @@ export async function installHooksCommand() {
   console.log('Hooks configured:');
   console.log('  - PreToolUse: file lock gatekeeper');
   console.log('  - PostToolUse: commit detection → release locks');
-  console.log('  - Stop: session cleanup');
   console.log('  - SessionStart: session registration + heartbeat');
 }

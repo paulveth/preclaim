@@ -56,6 +56,7 @@ export function defaultConfig(projectId: string, backend: string): PreclaimConfi
     ttl: 30,
     failOpen: true,
     ignore: ['*.md', 'package-lock.json', '*.test.ts'],
+    idleTimeoutMinutes: 15,
   };
 }
 

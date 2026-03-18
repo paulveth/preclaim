@@ -2,7 +2,8 @@
 // PreToolUse hook — the gatekeeper
 // Intercepts Edit/Write/MultiEdit tool calls, claims file locks
 
-import { resolve, relative, dirname } from 'node:path';
+import { resolve, relative, dirname, join } from 'node:path';
+import { writeFile } from 'node:fs/promises';
 import { PreclaimClient, findConfig, loadCredentials, refreshCredentials } from '@preclaim/core';
 import { readHookInput, writeHookOutput } from '../lib/hook-io.js';
 import { minimatch } from 'minimatch';
@@ -12,6 +13,13 @@ const WRITE_TOOLS = new Set(['Edit', 'Write', 'MultiEdit']);
 async function main() {
   try {
     const input = await readHookInput();
+
+    // Update activity timestamp on every tool call (not just writes)
+    try {
+      await writeFile(join(process.cwd(), '.preclaim.activity'), String(Date.now()));
+    } catch {
+      // Non-critical — don't block on activity tracking
+    }
 
     // Only intercept file-writing tools
     if (!input.tool_name || !WRITE_TOOLS.has(input.tool_name)) {

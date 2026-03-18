@@ -53,7 +53,15 @@ async function main() {
         });
         return;
       }
+      writeHookOutput({
+        systemMessage: `[Preclaim] Error: could not register session (${result.error}). File locking disabled.`,
+      });
+      return;
     }
+
+    // Write initial activity timestamp
+    const activityFile = join(process.cwd(), '.preclaim.activity');
+    await writeFile(activityFile, String(Date.now()));
 
     // Start heartbeat daemon
     const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -67,6 +75,7 @@ async function main() {
         PRECLAIM_SESSION_ID: input.session_id,
         PRECLAIM_BACKEND: found.config.backend,
         PRECLAIM_ACCESS_TOKEN: creds.accessToken,
+        PRECLAIM_IDLE_TIMEOUT: String(found.config.idleTimeoutMinutes ?? 15),
       },
     });
 

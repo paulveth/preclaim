@@ -134,6 +134,7 @@ export interface PreclaimConfig {
   ttl: number;
   failOpen: boolean;
   ignore: string[];
+  idleTimeoutMinutes?: number;
 }
 
 // === Credentials ===
