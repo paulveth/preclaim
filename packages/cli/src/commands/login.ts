@@ -33,10 +33,60 @@ function handleAuthCallback(
       const url = new URL(req.url!, `http://localhost`);
 
       if (url.pathname === '/callback') {
+        // Check for PKCE flow (code in query params)
+        const code = url.searchParams.get('code');
+        if (code) {
+          // PKCE flow: exchange code for session server-side
+          try {
+            const tokenRes = await fetch(`${supabase.url}/auth/v1/token?grant_type=pkce`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'apikey': supabase.anonKey,
+              },
+              body: JSON.stringify({
+                auth_code: code,
+                code_verifier: url.searchParams.get('code_verifier') ?? '',
+              }),
+            });
+
+            if (tokenRes.ok) {
+              const data = await tokenRes.json() as {
+                access_token: string;
+                refresh_token: string;
+                expires_in: number;
+                user: { id: string; email?: string };
+              };
+
+              await saveCredentials({
+                accessToken: data.access_token,
+                refreshToken: data.refresh_token,
+                expiresAt: new Date(Date.now() + data.expires_in * 1000).toISOString(),
+                user: {
+                  id: data.user.id,
+                  email: data.user.email ?? '',
+                  orgId: '',
+                },
+              });
+
+              res.writeHead(200, { 'Content-Type': 'text/html' });
+              res.end('<!DOCTYPE html><html><body><h1>Logged in to Preclaim!</h1><p>You can close this tab.</p></body></html>');
+              console.log(`Logged in as ${data.user.email ?? data.user.id}`);
+              server.close();
+              resolve();
+              return;
+            }
+          } catch {
+            // Fall through to implicit flow page
+          }
+        }
+
+        // Implicit flow: tokens in hash fragment (client-side extraction)
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(`<!DOCTYPE html><html><body>
 <h1>Logging in to Preclaim...</h1>
 <script>
+// Try hash fragment (implicit flow)
 const hash = window.location.hash.substring(1);
 const params = new URLSearchParams(hash);
 const access_token = params.get('access_token');
