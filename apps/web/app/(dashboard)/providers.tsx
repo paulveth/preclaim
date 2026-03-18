@@ -83,6 +83,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setProfile(profileData);
 
+      if (!profileData.org_id) {
+        router.push('/onboard');
+        return;
+      }
+
       if (profileData.org_id) {
         const [orgResult, projectResult] = await Promise.all([
           supabase
@@ -112,7 +117,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
     },
-    [supabase],
+    [supabase, router],
   );
 
   useEffect(() => {
@@ -124,6 +129,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (session?.user) {
         setUser(session.user);
         await fetchUserData(session.user.id);
+      } else {
+        router.push('/login');
       }
       setLoading(false);
     };
