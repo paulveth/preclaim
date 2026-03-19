@@ -22,7 +22,7 @@ Locks are atomic (via Supabase RPC), fail-open on network errors, and resolve wi
 ## Quick Start
 
 ```bash
-npm i -g preclaim
+npm i -g preclaim    # or: pnpm add -g preclaim
 preclaim init
 ```
 
