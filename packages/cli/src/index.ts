@@ -2,6 +2,7 @@
 
 import { createRequire } from 'node:module';
 import { Command } from 'commander';
+import { getCommandDescription } from '@preclaim/core';
 import { initCommand } from './commands/init.js';
 import { loginCommand } from './commands/login.js';
 import { lockCommand } from './commands/lock.js';
@@ -17,6 +18,8 @@ import { sessionsCommand } from './commands/sessions.js';
 const require = createRequire(import.meta.url);
 const { version } = require('../package.json') as { version: string };
 
+const desc = getCommandDescription;
+
 const program = new Command();
 
 program
@@ -26,65 +29,65 @@ program
 
 program
   .command('init')
-  .description('Initialize Preclaim in the current project')
+  .description(desc('init'))
   .option('--backend <url>', 'Backend URL', 'https://preclaim.dev')
   .option('--project-id <id>', 'Project ID')
   .action(initCommand);
 
 program
   .command('login')
-  .description('Authenticate with Preclaim')
+  .description(desc('login'))
   .action(loginCommand);
 
 program
   .command('lock <file>')
-  .description('Lock a file')
+  .description(desc('lock'))
   .option('-s, --session <id>', 'Session ID')
   .option('-t, --ttl <minutes>', 'Lock TTL in minutes')
   .action(lockCommand);
 
 program
   .command('unlock [file]')
-  .description('Release a file lock')
+  .description(desc('unlock'))
   .option('-s, --session <id>', 'Session ID')
   .option('-a, --all', 'Release all locks for this session')
   .action(unlockCommand);
 
 program
   .command('status')
-  .description('Show active locks for this project')
+  .description(desc('status'))
   .action(statusCommand);
 
 program
   .command('check <files...>')
-  .description('Check lock status for files')
+  .description(desc('check'))
   .action(checkCommand);
 
 program
   .command('whoami')
-  .description('Show current user info')
+  .description(desc('whoami'))
   .action(whoamiCommand);
 
 program
   .command('config')
-  .description('View or modify project configuration')
+  .description(desc('config'))
   .option('--get <key>', 'Get a config value')
   .option('--set <key=value>', 'Set a config value')
   .action(configCommand);
 
 program
   .command('sessions')
-  .description('Show active sessions for this project')
+  .description(desc('sessions'))
   .action(sessionsCommand);
 
 program
   .command('logs')
-  .description('Show recent lock activity for this project')
+  .description(desc('logs'))
   .action(logsCommand);
 
 program
   .command('install-hooks')
-  .description('Install Claude Code hooks in the current project')
+  .description(desc('install-hooks'))
   .action(installHooksCommand);
 
 // Internal: hook runner for Claude Code hooks via npx

@@ -56,6 +56,9 @@ export default function Home() {
             <a href="#features" className={styles.navLink}>
               Features
             </a>
+            <a href="/docs" className={styles.navLink}>
+              Docs
+            </a>
             <a
               href="https://github.com/paulveth/preclaim"
               className={styles.navLink}
@@ -275,10 +278,8 @@ export default function Home() {
           </div>
           <div className={styles.ctaButtons}>
             <a
-              href="https://github.com/paulveth/preclaim"
+              href="/docs"
               className={styles.buttonPrimary}
-              target="_blank"
-              rel="noopener noreferrer"
             >
               View Documentation
               <span className={styles.buttonArrow}>&rarr;</span>

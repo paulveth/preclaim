@@ -1,4 +1,6 @@
 export { PreclaimClient } from './client.js';
+export { cliCommands, mcpTools, hooks, configEntries, getCommandDescription, getToolDescription } from './docs.js';
+export type { DocCommand, DocCommandOption, DocTool, DocToolArg, DocHook, DocConfigEntry } from './docs.js';
 export { findConfig, loadCredentials, getCredentialsPath, defaultConfig, getSupabaseConfig, saveCredentials, refreshCredentials } from './config.js';
 export type {
   ActivityEntry,
