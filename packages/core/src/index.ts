@@ -1,6 +1,7 @@
 export { PreclaimClient } from './client.js';
 export { findConfig, loadCredentials, getCredentialsPath, defaultConfig, getSupabaseConfig, saveCredentials, refreshCredentials } from './config.js';
 export type {
+  ActivityEntry,
   Organization,
   Profile,
   Project,

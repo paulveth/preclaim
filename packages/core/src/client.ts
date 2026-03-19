@@ -130,6 +130,10 @@ export class PreclaimClient {
     });
   }
 
+  async listActivity(projectId: string): Promise<ApiResponse<ActivityEntry[]>> {
+    return this.request<ActivityEntry[]>(`/activity?project_id=${encodeURIComponent(projectId)}`);
+  }
+
   async getVersion(): Promise<ApiResponse<VersionResult>> {
     return this.request<VersionResult>('/version');
   }

@@ -71,6 +71,10 @@ export interface LockHistoryEntry {
   created_at: string;
 }
 
+export interface ActivityEntry extends LockHistoryEntry {
+  profiles: { name: string | null; email: string; avatar_url: string | null };
+}
+
 // === API Types ===
 export type ClaimStatus = 'acquired' | 'already_held' | 'conflict';
 
@@ -119,6 +123,14 @@ export interface ReleaseRequest {
 
 export interface ReleaseResult {
   released: number;
+}
+
+// === Stats ===
+export interface StatsResult {
+  active_locks: number;
+  active_sessions: number;
+  activity_today: number;
+  files_today: number;
 }
 
 // === Version ===
