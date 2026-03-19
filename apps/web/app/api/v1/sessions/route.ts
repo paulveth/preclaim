@@ -71,7 +71,7 @@ export async function DELETE(req: NextRequest) {
   // Verify session ownership (defense in depth, RLS is the vangnet)
   const { data: session } = await auth.supabase
     .from('sessions')
-    .select('user_id')
+    .select('user_id, provider')
     .eq('id', body.session_id)
     .single();
 
@@ -91,7 +91,7 @@ export async function DELETE(req: NextRequest) {
       file_path: l.file_path,
       user_id: l.user_id,
       session_id: l.session_id,
-      provider: 'claude-code',
+      provider: session?.provider ?? 'unknown',
       action: 'release' as const,
     }));
 

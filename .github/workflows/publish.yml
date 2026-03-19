@@ -10,6 +10,7 @@ on:
         options:
           - core
           - cli
+          - mcp
           - both
 
 permissions:
@@ -54,6 +55,27 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @preclaim/db build && pnpm --filter @preclaim/core build && pnpm --filter preclaim build
       - working-directory: packages/cli
+        run: |
+          pnpm pack
+          npm publish *.tgz --access public
+
+  publish-mcp:
+    if: inputs.package == 'mcp'
+    runs-on: ubuntu-latest
+    environment: npm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.6.5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm install -g npm@latest
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @preclaim/db build && pnpm --filter @preclaim/core build && pnpm --filter @preclaim/mcp build
+      - working-directory: packages/mcp
         run: |
           pnpm pack
           npm publish *.tgz --access public

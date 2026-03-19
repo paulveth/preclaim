@@ -1,0 +1,35 @@
+{
+  "name": "@preclaim/mcp",
+  "version": "0.1.0",
+  "description": "MCP server for Preclaim — AI file coordination for any MCP-compatible agent",
+  "type": "module",
+  "bin": {
+    "preclaim-mcp": "dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@preclaim/core": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "minimatch": "^10.0.0",
+    "zod": "^3.24.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/paulveth/preclaim.git",
+    "directory": "packages/mcp"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.8.0"
+  }
+}

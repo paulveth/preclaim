@@ -76,6 +76,13 @@ export async function DELETE(req: NextRequest) {
 
   const { data: locksToRelease } = await selectQuery;
 
+  // Look up session provider for history logging
+  const { data: session } = await auth.supabase
+    .from('sessions')
+    .select('provider')
+    .eq('id', body.session_id)
+    .single();
+
   // Log releases to history
   if (locksToRelease && locksToRelease.length > 0) {
     const historyEntries = locksToRelease.map(l => ({
@@ -83,7 +90,7 @@ export async function DELETE(req: NextRequest) {
       file_path: l.file_path,
       user_id: l.user_id,
       session_id: l.session_id,
-      provider: 'claude-code',
+      provider: session?.provider ?? 'unknown',
       action: 'release' as const,
     }));
 
