@@ -10,6 +10,7 @@ import { checkCommand } from './commands/check.js';
 import { whoamiCommand } from './commands/whoami.js';
 import { configCommand } from './commands/config.js';
 import { installHooksCommand } from './commands/install-hooks.js';
+import { logsCommand } from './commands/logs.js';
 
 const program = new Command();
 
@@ -65,6 +66,11 @@ program
   .option('--get <key>', 'Get a config value')
   .option('--set <key=value>', 'Set a config value')
   .action(configCommand);
+
+program
+  .command('logs')
+  .description('Show recent lock activity for this project')
+  .action(logsCommand);
 
 program
   .command('install-hooks')
