@@ -17,8 +17,9 @@ AI File Coordination Layer — predictieve file locking voor AI coding agents.
 
 ```
 packages/
-  core/    # Gedeelde types, API client, config (@preclaim/core)
+  core/    # Gedeelde types, API client, config, docs (@preclaim/core)
   cli/     # CLI tool + Claude Code hooks (preclaim)
+  mcp/     # MCP server voor elke MCP-compatible agent (@preclaim/mcp)
   db/      # Supabase types + migraties (@preclaim/db)
 apps/
   web/     # Next.js API routes + dashboard (@preclaim/web)
@@ -34,6 +35,10 @@ pnpm test           # Tests draaien
 pnpm lint           # ESLint
 pnpm typecheck      # TypeScript check
 ```
+
+## Docs als Single Source of Truth
+
+`packages/core/src/docs.ts` bevat alle beschrijvingen voor CLI commando's, MCP tools, hooks en config. CLI en MCP server importeren hieruit — nooit beschrijvingen hardcoden.
 
 ## Key Patterns
 
@@ -53,3 +58,5 @@ pnpm typecheck      # TypeScript check
 - Token refresh voor sessies > 1 uur
 - Bulk operations voor heartbeat updates, NOOIT N+1 loops
 - Zod validatie op alle API routes (systeemgrenzen)
+- Provider niet hardcoden — `claim_file` RPC haalt provider op uit `sessions` tabel
+- `preclaim init` detecteert agents automatisch (Claude Code, Cursor, Windsurf, Cline)
