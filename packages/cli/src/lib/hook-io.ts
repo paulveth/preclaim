@@ -3,6 +3,7 @@
 
 export interface ClaudeHookInput {
   session_id: string;
+  hook_event_name?: string;
   tool_name?: string;
   tool_input?: Record<string, unknown>;
 }
@@ -32,6 +33,24 @@ export async function readHookInput(): Promise<ClaudeHookInput> {
   });
 }
 
-export function writeHookOutput(output: ClaudeHookOutput): void {
-  process.stdout.write(JSON.stringify(output));
+export function writeHookOutput(output: ClaudeHookOutput, eventName?: string): void {
+  const hookEventName = eventName ?? 'PreToolUse';
+
+  if (output.permissionDecision === 'deny') {
+    process.stdout.write(JSON.stringify({
+      hookSpecificOutput: {
+        hookEventName,
+        permissionDecision: 'deny',
+        permissionDecisionReason: output.reason ?? 'Denied by Preclaim',
+      },
+    }));
+  } else if (output.permissionDecision === 'allow') {
+    process.stdout.write(JSON.stringify({
+      hookSpecificOutput: {
+        hookEventName,
+        permissionDecision: 'allow',
+        ...(output.systemMessage ? { permissionDecisionReason: output.systemMessage } : {}),
+      },
+    }));
+  }
 }
