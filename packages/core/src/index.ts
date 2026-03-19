@@ -6,6 +6,7 @@ export type {
   Profile,
   Project,
   Session,
+  SessionWithProfile,
   Lock,
   LockHolder,
   LockHistoryEntry,

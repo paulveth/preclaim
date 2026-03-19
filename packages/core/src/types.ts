@@ -40,6 +40,10 @@ export interface Session {
   metadata: Record<string, unknown>;
 }
 
+export interface SessionWithProfile extends Session {
+  profiles: { name: string | null; email: string; avatar_url: string | null };
+}
+
 // === Locks ===
 export interface Lock {
   id: string;

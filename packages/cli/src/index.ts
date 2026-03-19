@@ -11,6 +11,7 @@ import { whoamiCommand } from './commands/whoami.js';
 import { configCommand } from './commands/config.js';
 import { installHooksCommand } from './commands/install-hooks.js';
 import { logsCommand } from './commands/logs.js';
+import { sessionsCommand } from './commands/sessions.js';
 
 const program = new Command();
 
@@ -66,6 +67,11 @@ program
   .option('--get <key>', 'Get a config value')
   .option('--set <key=value>', 'Set a config value')
   .action(configCommand);
+
+program
+  .command('sessions')
+  .description('Show active sessions for this project')
+  .action(sessionsCommand);
 
 program
   .command('logs')

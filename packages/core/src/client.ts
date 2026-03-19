@@ -10,6 +10,7 @@ import type {
   HeartbeatRequest,
   HeartbeatResult,
   SessionRegisterRequest,
+  SessionWithProfile,
   ReleaseRequest,
   ReleaseResult,
   Lock,
@@ -129,6 +130,10 @@ export class PreclaimClient {
       method: 'DELETE',
       body: JSON.stringify({ session_id: sessionId }),
     });
+  }
+
+  async listSessions(projectId: string): Promise<ApiResponse<SessionWithProfile[]>> {
+    return this.request<SessionWithProfile[]>(`/sessions?project_id=${encodeURIComponent(projectId)}`);
   }
 
   async listActivity(projectId: string): Promise<ApiResponse<ActivityEntry[]>> {
