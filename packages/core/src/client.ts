@@ -1,4 +1,7 @@
+export const PRECLAIM_API_VERSION = "v1";
+
 import type {
+  ActivityEntry,
   ApiResponse,
   ClaimRequest,
   ClaimResult,
@@ -59,10 +62,33 @@ export class PreclaimClient {
   }
 
   async claimFile(req: ClaimRequest): Promise<ApiResponse<ClaimResult>> {
-    return this.request<ClaimResult>('/locks', {
-      method: 'POST',
-      body: JSON.stringify(req),
-    });
+    // Special handling: 409 is a valid conflict response, not an error
+    try {
+      const url = `${this.baseUrl}/api/v1/locks`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.accessToken}`,
+        },
+        body: JSON.stringify(req),
+        signal: AbortSignal.timeout(this.timeoutMs),
+      });
+
+      if (res.status === 409 || res.ok) {
+        const body = await res.json() as { data?: ClaimResult; error?: string };
+        if (body.error) return { error: body.error };
+        return { data: body.data as ClaimResult };
+      }
+
+      const body = await res.text();
+      return { error: `HTTP ${res.status}: ${body}` };
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === 'TimeoutError') {
+        return { error: `Request timeout` };
+      }
+      return { error: err instanceof Error ? err.message : 'Unknown error' };
+    }
   }
 
   async releaseLocks(req: ReleaseRequest): Promise<ApiResponse<ReleaseResult>> {
