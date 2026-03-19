@@ -110,6 +110,12 @@ export async function DELETE(req: NextRequest) {
     }
   }
 
+  // Cleanup file interests for this session
+  await auth.supabase
+    .from('file_interests')
+    .delete()
+    .eq('session_id', body.session_id);
+
   // Delete session
   const { error: deleteSessionError } = await auth.supabase
     .from('sessions')

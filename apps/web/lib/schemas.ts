@@ -37,3 +37,15 @@ export const OnboardRequestSchema = z.object({
   project_name: z.string().min(1).max(100),
   project_slug: z.string().min(1).max(100),
 });
+
+export const RegisterInterestSchema = z.object({
+  project_id: z.string().uuid(),
+  file_path: z.string().min(1).max(500),
+  session_id: z.string().min(1),
+});
+
+export const CheckInterestsSchema = z.object({
+  project_id: z.string().uuid(),
+  file_path: z.string().min(1).max(500),
+  exclude_session_id: z.string().min(1),
+});

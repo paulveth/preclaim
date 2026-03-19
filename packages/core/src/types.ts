@@ -79,6 +79,33 @@ export interface ActivityEntry extends LockHistoryEntry {
   profiles: { name: string | null; email: string; avatar_url: string | null };
 }
 
+// === File Interests (Soft Signals) ===
+export interface FileInterest {
+  id: string;
+  project_id: string;
+  file_path: string;
+  session_id: string;
+  user_id: string;
+  created_at: string;
+  expires_at: string;
+}
+
+export interface RegisterInterestRequest {
+  project_id: string;
+  file_path: string;
+  session_id: string;
+}
+
+export interface CheckInterestsRequest {
+  project_id: string;
+  file_path: string;
+  exclude_session_id: string;
+}
+
+export interface CheckInterestsResult {
+  interests: FileInterest[];
+}
+
 // === API Types ===
 export type ClaimStatus = 'acquired' | 'already_held' | 'conflict';
 
@@ -133,6 +160,7 @@ export interface ReleaseResult {
 export interface StatsResult {
   active_locks: number;
   active_sessions: number;
+  active_interests: number;
   activity_today: number;
   files_today: number;
 }

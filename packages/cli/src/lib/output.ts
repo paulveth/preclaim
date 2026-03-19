@@ -1,3 +1,4 @@
+// CLI output formatting helpers
 import type { Lock, ActivityEntry, SessionWithProfile } from '@preclaim/core';
 
 export function formatBytes(bytes: number): string {

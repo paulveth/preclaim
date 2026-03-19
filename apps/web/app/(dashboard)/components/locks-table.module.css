@@ -140,6 +140,44 @@
   margin-top: 4px;
 }
 
+/* ─── INTERESTS (SOFT SIGNALS) ─── */
+
+.interestsSection {
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  margin-top: 4px;
+}
+
+.interestsHeader {
+  padding: 12px 24px 8px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gray-600);
+  font-weight: 500;
+}
+
+.interestsList {
+  padding: 0 24px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.interestRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 0;
+  font-size: 13px;
+}
+
+.interestTtl {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--gray-600);
+  margin-left: auto;
+}
+
 .error {
   padding: 24px;
   color: #ff5f57;

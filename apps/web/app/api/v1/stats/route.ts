@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
   todayStart.setHours(0, 0, 0, 0);
   const todayISO = todayStart.toISOString();
 
-  const [locksResult, sessionsResult, conflictsResult, filesResult] =
+  const [locksResult, sessionsResult, interestsResult, conflictsResult, filesResult] =
     await Promise.all([
       // Active locks count
       auth.supabase
@@ -34,6 +34,12 @@ export async function GET(req: NextRequest) {
         .from('sessions')
         .select('*', { count: 'exact', head: true })
         .eq('project_id', project_id),
+      // Active file interests count
+      auth.supabase
+        .from('file_interests')
+        .select('*', { count: 'exact', head: true })
+        .eq('project_id', project_id)
+        .gt('expires_at', new Date().toISOString()),
       // Conflicts today (lock_history where action would show conflict — we track acquire/release,
       // conflicts are tracked as separate entries in lock_history with action context)
       auth.supabase
@@ -58,6 +64,7 @@ export async function GET(req: NextRequest) {
     data: {
       active_locks: locksResult.count ?? 0,
       active_sessions: sessionsResult.count ?? 0,
+      active_interests: interestsResult.count ?? 0,
       activity_today: conflictsResult.count ?? 0,
       files_today: uniqueFiles,
     },

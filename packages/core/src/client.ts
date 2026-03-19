@@ -13,6 +13,9 @@ import type {
   SessionWithProfile,
   ReleaseRequest,
   ReleaseResult,
+  RegisterInterestRequest,
+  CheckInterestsRequest,
+  CheckInterestsResult,
   Lock,
   MeResult,
   VersionResult,
@@ -146,6 +149,22 @@ export class PreclaimClient {
 
   async getVersion(): Promise<ApiResponse<VersionResult>> {
     return this.request<VersionResult>('/version');
+  }
+
+  async registerInterest(req: RegisterInterestRequest): Promise<ApiResponse<void>> {
+    return this.request<void>('/interests', {
+      method: 'POST',
+      body: JSON.stringify(req),
+    });
+  }
+
+  async checkInterests(req: CheckInterestsRequest): Promise<ApiResponse<CheckInterestsResult>> {
+    const params = new URLSearchParams({
+      project_id: req.project_id,
+      file_path: req.file_path,
+      exclude_session_id: req.exclude_session_id,
+    });
+    return this.request<CheckInterestsResult>(`/interests?${params}`);
   }
 
   async ping(): Promise<{ ok: boolean; latencyMs: number; error?: string }> {

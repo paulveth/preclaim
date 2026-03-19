@@ -155,6 +155,29 @@ export interface Database {
         };
         Update: never;
       };
+      file_interests: {
+        Row: {
+          id: string;
+          project_id: string;
+          file_path: string;
+          session_id: string;
+          user_id: string;
+          created_at: string;
+          expires_at: string;
+        };
+        Insert: {
+          id?: string;
+          project_id: string;
+          file_path: string;
+          session_id: string;
+          user_id: string;
+          created_at?: string;
+          expires_at?: string;
+        };
+        Update: {
+          expires_at?: string;
+        };
+      };
     };
     Functions: {
       claim_file: {
@@ -179,6 +202,16 @@ export interface Database {
       cleanup_expired_locks: {
         Args: Record<string, never>;
         Returns: number;
+      };
+      register_file_interest: {
+        Args: {
+          p_project_id: string;
+          p_file_path: string;
+          p_session_id: string;
+          p_user_id: string;
+          p_ttl_seconds?: number;
+        };
+        Returns: undefined;
       };
     };
   };
