@@ -7,6 +7,8 @@ dist/
 .env.*.local
 *.tsbuildinfo
 .preclaim.pid
+.preclaim.activity
+.preclaim.debug.log
 ~/.preclaim/
 .temp/
 .vercel

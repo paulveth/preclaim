@@ -3,24 +3,16 @@
 // Intercepts Edit/Write/MultiEdit tool calls, claims file locks
 
 import { resolve, relative, dirname, join } from 'node:path';
-import { writeFile, appendFile } from 'node:fs/promises';
+import { writeFile } from 'node:fs/promises';
 import { PreclaimClient, findConfig, loadCredentials, refreshCredentials } from '@preclaim/core';
 import { readHookInput, writeHookOutput } from '../lib/hook-io.js';
 import { minimatch } from 'minimatch';
 
 const WRITE_TOOLS = new Set(['Edit', 'Write', 'MultiEdit']);
 
-async function debug(msg: string) {
-  try {
-    const logPath = join(process.cwd(), '.preclaim.debug.log');
-    await appendFile(logPath, `[${new Date().toISOString()}] ${msg}\n`);
-  } catch { /* ignore */ }
-}
-
 async function main() {
   try {
     const input = await readHookInput();
-    await debug(`hook fired: tool=${input.tool_name} file=${input.tool_input?.file_path ?? 'none'} session=${input.session_id}`);
 
     // Update activity timestamp on every tool call (not just writes)
     try {
@@ -91,8 +83,6 @@ async function main() {
       ttl_minutes: found.config.ttl,
     });
 
-    await debug(`claim result: ${JSON.stringify(result)}`);
-
     // Network error — fail open
     if (result.error) {
       if (found.config.failOpen) {
@@ -134,8 +124,7 @@ async function main() {
         ].join('\n'),
       });
     }
-  } catch (err) {
-    await debug(`CRASH: ${err instanceof Error ? err.message : String(err)}`);
+  } catch {
     // Fail open — never block development
     return;
   }
