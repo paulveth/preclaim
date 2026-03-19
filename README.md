@@ -56,6 +56,10 @@ Then add to your agent's MCP config:
 
 The MCP server exposes 5 tools: `preclaim_lock`, `preclaim_unlock`, `preclaim_check`, `preclaim_status`, and `preclaim_read`.
 
+## Documentation
+
+Full reference at [preclaim.dev/docs](https://preclaim.dev/docs) — CLI commands, MCP tools, hooks, and configuration. Generated from the same source code that powers the tools.
+
 ## CLI Commands
 
 | Command | Description |
