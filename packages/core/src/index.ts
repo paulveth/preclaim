@@ -24,5 +24,6 @@ export type {
   ApiResponse,
   HookInput,
   HookResult,
+  MeResult,
   VersionResult,
 } from './types.js';

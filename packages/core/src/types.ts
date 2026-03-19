@@ -161,6 +161,22 @@ export interface PreclaimCredentials {
   };
 }
 
+// === Me (whoami) ===
+export interface MeResult {
+  user: {
+    id: string;
+    email: string;
+    name: string | null;
+    avatar_url: string | null;
+    role: 'admin' | 'member';
+  };
+  org: {
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
+}
+
 // === API Response Wrapper ===
 export interface ApiResponse<T> {
   data?: T;

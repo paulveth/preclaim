@@ -13,6 +13,7 @@ import type {
   ReleaseRequest,
   ReleaseResult,
   Lock,
+  MeResult,
   VersionResult,
 } from './types.js';
 
@@ -132,6 +133,10 @@ export class PreclaimClient {
 
   async listActivity(projectId: string): Promise<ApiResponse<ActivityEntry[]>> {
     return this.request<ActivityEntry[]>(`/activity?project_id=${encodeURIComponent(projectId)}`);
+  }
+
+  async getMe(): Promise<ApiResponse<MeResult>> {
+    return this.request<MeResult>('/me');
   }
 
   async getVersion(): Promise<ApiResponse<VersionResult>> {
