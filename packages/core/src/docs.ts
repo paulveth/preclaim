@@ -47,12 +47,12 @@ export const cliCommands: DocCommand[] = [
   {
     name: 'init',
     usage: 'preclaim init',
-    description: 'Initialize Preclaim in the current project',
+    description: 'Full setup — auth, project creation/join, and automatic agent detection + configuration',
     options: [
       { flags: '--backend <url>', description: 'Backend URL', default: 'https://preclaim.dev' },
-      { flags: '--project-id <id>', description: 'Project ID' },
+      { flags: '--project-id <id>', description: 'Project ID (skip onboarding)' },
     ],
-    example: 'preclaim init --project-id my-project',
+    example: 'preclaim init',
   },
   {
     name: 'login',

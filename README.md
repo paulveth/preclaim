@@ -21,40 +21,22 @@ Locks are atomic (via Supabase RPC), fail-open on network errors, and resolve wi
 
 ## Quick Start
 
-### Option 1: Claude Code (direct hooks)
-
 ```bash
 npm i -g preclaim
 preclaim init
 ```
 
-That's it. `preclaim init` handles authentication (GitHub OAuth), project creation, and hook installation.
+That's it. `preclaim init` handles everything:
 
-### Option 2: MCP Server (any agent)
+1. **Authentication** — logs you in via GitHub OAuth (skips if already logged in)
+2. **Project setup** — creates a new project or joins an existing one (if `.preclaim.json` is already in the repo)
+3. **Agent detection** — automatically detects your AI agent and configures it:
+   - **Claude Code** → installs hooks (`.claude/settings.json`)
+   - **Cursor** → writes MCP config (`.cursor/mcp.json`)
+   - **Windsurf** → writes MCP config (`.windsurf/mcp.json`)
+   - **Cline** → writes MCP config (`.cline/mcp.json`)
 
-Works with Cursor, Windsurf, Cline, Claude Desktop, and any MCP-compatible agent.
-
-```bash
-# First, authenticate and initialize your project
-npm i -g preclaim
-preclaim login
-preclaim init
-```
-
-Then add to your agent's MCP config:
-
-```json
-{
-  "mcpServers": {
-    "preclaim": {
-      "command": "npx",
-      "args": ["@preclaim/mcp"]
-    }
-  }
-}
-```
-
-The MCP server exposes 5 tools: `preclaim_lock`, `preclaim_unlock`, `preclaim_check`, `preclaim_status`, and `preclaim_read`.
+Every team member runs the same command. First person creates the project, everyone after joins automatically.
 
 ## Documentation
 
@@ -64,7 +46,7 @@ Full reference at [preclaim.dev/docs](https://preclaim.dev/docs) — CLI command
 
 | Command | Description |
 |---|---|
-| `preclaim init` | Initialize project — auth, onboarding, hook install |
+| `preclaim init` | Full setup — auth, project, agent detection + config |
 | `preclaim login` | Authenticate via GitHub OAuth |
 | `preclaim status` | Show active locks for the current project |
 | `preclaim lock <file>` | Manually lock a file |
