@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { createRequire } from 'node:module';
 import { Command } from 'commander';
 import { initCommand } from './commands/init.js';
 import { loginCommand } from './commands/login.js';
@@ -13,12 +14,15 @@ import { installHooksCommand } from './commands/install-hooks.js';
 import { logsCommand } from './commands/logs.js';
 import { sessionsCommand } from './commands/sessions.js';
 
+const require = createRequire(import.meta.url);
+const { version } = require('../package.json') as { version: string };
+
 const program = new Command();
 
 program
   .name('preclaim')
   .description('AI File Coordination Layer — predictive file locking for AI coding agents')
-  .version('0.3.0');
+  .version(version);
 
 program
   .command('init')
