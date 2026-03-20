@@ -49,3 +49,8 @@ export const CheckInterestsSchema = z.object({
   file_path: z.string().min(1).max(500),
   exclude_session_id: z.string().min(1),
 });
+
+export const ListInterestsSchema = z.object({
+  project_id: z.string().uuid(),
+  list: z.literal('true'),
+});

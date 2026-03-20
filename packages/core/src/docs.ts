@@ -126,6 +126,30 @@ export const cliCommands: DocCommand[] = [
     description: 'Install Claude Code hooks in the current project',
     example: 'preclaim install-hooks',
   },
+  {
+    name: 'open',
+    usage: 'preclaim open',
+    description: 'Open the Preclaim dashboard in your browser',
+    example: 'preclaim open',
+  },
+  {
+    name: 'info',
+    usage: 'preclaim info',
+    description: 'Show project ID, backend URL, dashboard URL, config, and version',
+    example: 'preclaim info',
+  },
+  {
+    name: 'doctor',
+    usage: 'preclaim doctor',
+    description: 'Run health checks: backend, credentials, hooks, heartbeat daemon',
+    example: 'preclaim doctor',
+  },
+  {
+    name: 'upgrade',
+    usage: 'preclaim upgrade',
+    description: 'Update Preclaim CLI to the latest version',
+    example: 'preclaim upgrade',
+  },
 ];
 
 // ─── MCP Tools ───

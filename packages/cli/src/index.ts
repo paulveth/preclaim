@@ -14,6 +14,10 @@ import { configCommand } from './commands/config.js';
 import { installHooksCommand } from './commands/install-hooks.js';
 import { logsCommand } from './commands/logs.js';
 import { sessionsCommand } from './commands/sessions.js';
+import { openCommand } from './commands/open.js';
+import { infoCommand } from './commands/info.js';
+import { doctorCommand } from './commands/doctor.js';
+import { upgradeCommand } from './commands/upgrade.js';
 
 const require = createRequire(import.meta.url);
 const { version } = require('../package.json') as { version: string };
@@ -89,6 +93,26 @@ program
   .command('install-hooks')
   .description(desc('install-hooks'))
   .action(installHooksCommand);
+
+program
+  .command('open')
+  .description(desc('open'))
+  .action(openCommand);
+
+program
+  .command('info')
+  .description(desc('info'))
+  .action(infoCommand);
+
+program
+  .command('doctor')
+  .description(desc('doctor'))
+  .action(doctorCommand);
+
+program
+  .command('upgrade')
+  .description(desc('upgrade'))
+  .action(upgradeCommand);
 
 // Internal: hook runner for Claude Code hooks via npx
 const hook = program

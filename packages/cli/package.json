@@ -1,6 +1,6 @@
 {
   "name": "preclaim",
-  "version": "0.3.7",
+  "version": "0.4.0",
   "description": "AI File Coordination Layer — predictive file locking for AI coding agents",
   "type": "module",
   "bin": {
@@ -20,6 +20,7 @@
     "commander": "^13.1.0",
     "minimatch": "^10.0.0"
   },
+  "homepage": "https://preclaim.dev",
   "repository": {
     "type": "git",
     "url": "https://github.com/paulveth/preclaim.git",

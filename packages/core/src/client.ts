@@ -7,6 +7,7 @@ import type {
   ClaimResult,
   BatchCheckRequest,
   BatchCheckResult,
+  FileInterest,
   HeartbeatRequest,
   HeartbeatResult,
   SessionRegisterRequest,
@@ -165,6 +166,10 @@ export class PreclaimClient {
       exclude_session_id: req.exclude_session_id,
     });
     return this.request<CheckInterestsResult>(`/interests?${params}`);
+  }
+
+  async listInterests(projectId: string): Promise<ApiResponse<FileInterest[]>> {
+    return this.request<FileInterest[]>(`/interests?project_id=${encodeURIComponent(projectId)}&list=true`);
   }
 
   async ping(): Promise<{ ok: boolean; latencyMs: number; error?: string }> {

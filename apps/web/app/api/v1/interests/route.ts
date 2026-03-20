@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { getAuthUser, unauthorized } from '../../../../lib/auth';
-import { RegisterInterestSchema, CheckInterestsSchema } from '../../../../lib/schemas';
+import { RegisterInterestSchema, CheckInterestsSchema, ListInterestsSchema } from '../../../../lib/schemas';
 
 // POST /api/v1/interests — Register a file interest (soft signal)
 export async function POST(req: NextRequest) {
@@ -28,12 +28,34 @@ export async function POST(req: NextRequest) {
   return Response.json({ data: null }, { status: 201 });
 }
 
+// GET /api/v1/interests?project_id=&list=true — List all active interests
 // GET /api/v1/interests?project_id=&file_path=&exclude_session_id= — Check active interests
 export async function GET(req: NextRequest) {
   const auth = await getAuthUser(req);
   if (!auth) return unauthorized();
 
   const params = Object.fromEntries(req.nextUrl.searchParams.entries());
+
+  // List all interests for a project
+  const listParsed = ListInterestsSchema.safeParse(params);
+  if (listParsed.success) {
+    const { project_id } = listParsed.data;
+
+    const { data, error } = await auth.supabase
+      .from('file_interests')
+      .select('*')
+      .eq('project_id', project_id)
+      .gt('expires_at', new Date().toISOString())
+      .order('file_path');
+
+    if (error) {
+      return Response.json({ error: error.message }, { status: 500 });
+    }
+
+    return Response.json({ data: data ?? [] });
+  }
+
+  // Check interests for a specific file
   const parsed = CheckInterestsSchema.safeParse(params);
   if (!parsed.success) {
     return Response.json({ error: parsed.error.flatten() }, { status: 400 });

@@ -1,5 +1,5 @@
 // CLI output formatting helpers
-import type { Lock, ActivityEntry, SessionWithProfile } from '@preclaim/core';
+import type { Lock, ActivityEntry, SessionWithProfile, FileInterest } from '@preclaim/core';
 
 export function formatBytes(bytes: number): string {
   if (bytes === 0) return '0 B';
@@ -55,6 +55,20 @@ export function formatLockTable(locks: Lock[]): string {
     lines.push(formatLock(lock));
   }
   lines.push('', `Total: ${locks.length} lock(s)`);
+  return lines.join('\n');
+}
+
+export function formatInterestTable(interests: FileInterest[]): string {
+  if (interests.length === 0) {
+    return 'No active soft signals.';
+  }
+
+  const lines = ['Soft signals (recently read):', ''];
+  for (const interest of interests) {
+    const expires = new Date(interest.expires_at).toLocaleTimeString();
+    lines.push(`  ${interest.file_path}  (session: ${interest.session_id.slice(0, 8)}…  expires: ${expires})`);
+  }
+  lines.push('', `Total: ${interests.length} signal(s)`);
   return lines.join('\n');
 }
 
