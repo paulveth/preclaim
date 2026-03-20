@@ -1,12 +1,9 @@
-import { createRequire } from 'node:module';
 import { writeFile, readFile, mkdir } from 'node:fs/promises';
 import { join, basename } from 'node:path';
 import { defaultConfig, loadCredentials, saveCredentials } from '@preclaim/core';
 import { loginCommand } from './login.js';
 import { installHooksCommand } from './install-hooks.js';
-
-const require = createRequire(import.meta.url);
-const { version: LOCAL_VERSION } = require('../../package.json') as { version: string };
+import { checkForUpdate } from '../lib/version-check.js';
 
 // ─── Agent detection ───
 
@@ -110,19 +107,9 @@ export async function initCommand(opts: { backend: string; projectId?: string })
   const backend = opts.backend;
 
   // ─── Version check ───
-  try {
-    const res = await fetch('https://registry.npmjs.org/preclaim/latest', {
-      signal: AbortSignal.timeout(2000),
-    });
-    if (res.ok) {
-      const { version: latest } = await res.json() as { version: string };
-      if (latest !== LOCAL_VERSION) {
-        console.log(`Update available: ${LOCAL_VERSION} → ${latest}`);
-        console.log(`Run: npm i -g preclaim   (or: pnpm add -g preclaim)\n`);
-      }
-    }
-  } catch {
-    // Non-critical — skip version check on network error
+  const updateNotice = await checkForUpdate();
+  if (updateNotice) {
+    console.log(updateNotice + '\n');
   }
 
   // ─── Step 1: Auth ───

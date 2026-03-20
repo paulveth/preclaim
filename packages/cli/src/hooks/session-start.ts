@@ -8,6 +8,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PreclaimClient, findConfig, loadCredentials, refreshCredentials } from '@preclaim/core';
 import { readHookInput, writeHookOutput } from '../lib/hook-io.js';
+import { checkForUpdate } from '../lib/version-check.js';
 
 async function main() {
   try {
@@ -39,12 +40,15 @@ async function main() {
       timeoutMs: 3000,
     });
 
-    // Register session
-    const result = await client.registerSession({
-      session_id: input.session_id,
-      project_id: found.config.projectId,
-      provider: 'claude-code',
-    });
+    // Register session + version check in parallel
+    const [result, updateNotice] = await Promise.all([
+      client.registerSession({
+        session_id: input.session_id,
+        project_id: found.config.projectId,
+        provider: 'claude-code',
+      }),
+      checkForUpdate(),
+    ]);
 
     if (result.error) {
       if (found.config.failOpen) {
@@ -86,17 +90,21 @@ async function main() {
       await writeFile(join(process.cwd(), '.preclaim.pid'), String(daemon.pid));
     }
 
-    writeHookOutput({
-      systemMessage: [
-        '[Preclaim] Session registered. File locking is active.',
-        '',
-        'Preclaim coordinates file access across multiple AI sessions:',
-        '- Files are automatically locked when you edit them',
-        '- Locks prevent other sessions from editing the same files',
-        '- Locks are released when you commit or this session ends',
-        '- If a lock is denied, work on a different file',
-      ].join('\n'),
-    });
+    const lines = [
+      '[Preclaim] Session registered. File locking is active.',
+      '',
+      'Preclaim coordinates file access across multiple AI sessions:',
+      '- Files are automatically locked when you edit them',
+      '- Locks prevent other sessions from editing the same files',
+      '- Locks are released when you commit or this session ends',
+      '- If a lock is denied, work on a different file',
+    ];
+
+    if (updateNotice) {
+      lines.push('', `⚠ ${updateNotice}`);
+    }
+
+    writeHookOutput({ systemMessage: lines.join('\n') });
   } catch {
     // Fail open
   }
