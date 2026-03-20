@@ -48,12 +48,16 @@ Full reference at [preclaim.dev/docs](https://preclaim.dev/docs) — CLI command
 |---|---|
 | `preclaim init` | Full setup — auth, project, agent detection + config |
 | `preclaim login` | Authenticate via GitHub OAuth |
-| `preclaim status` | Show active locks for the current project |
+| `preclaim status` | Show active locks and soft signals, with dashboard link |
 | `preclaim lock <file>` | Manually lock a file |
 | `preclaim unlock [file]` | Release locks (specific file or all) |
 | `preclaim check <files...>` | Check lock status for specific files |
 | `preclaim whoami` | Display current user info |
 | `preclaim config` | View/modify project configuration |
+| `preclaim info` | Show project ID, backend, dashboard URL, config, and version |
+| `preclaim open` | Open the Preclaim dashboard in your browser |
+| `preclaim doctor` | Health checks: backend, credentials, hooks, heartbeat |
+| `preclaim upgrade` | Update Preclaim CLI to the latest version |
 | `preclaim install-hooks` | Install Claude Code hooks |
 
 ## Integrations
