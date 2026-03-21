@@ -7,6 +7,7 @@ Predictive file locking for AI coding agents. Preclaim prevents merge conflicts 
 ```
 Agent A: edit src/auth.ts  →  preclaim: ✓ locked for you
 Agent B: edit src/auth.ts  →  preclaim: ✗ conflict — locked by Agent A
+Agent B: unlock --force     →  preclaim: ✓ force-released
 Agent A: git commit         →  preclaim: locks released
 ```
 
@@ -50,7 +51,7 @@ Full reference at [preclaim.dev/docs](https://preclaim.dev/docs) — CLI command
 | `preclaim login` | Authenticate via GitHub OAuth |
 | `preclaim status` | Show active locks and soft signals, with dashboard link |
 | `preclaim lock <file>` | Manually lock a file |
-| `preclaim unlock [file]` | Release locks (specific file or all) |
+| `preclaim unlock [file]` | Release locks (specific file, all, or `--force` to override any session) |
 | `preclaim check <files...>` | Check lock status for specific files |
 | `preclaim whoami` | Display current user info |
 | `preclaim config` | View/modify project configuration |
@@ -82,7 +83,7 @@ The `@preclaim/mcp` package runs as a local subprocess and exposes Preclaim as M
 | Tool | Description |
 |---|---|
 | `preclaim_lock` | Lock a file before editing — prevents conflicts |
-| `preclaim_unlock` | Release a lock on a file, or all session locks |
+| `preclaim_unlock` | Release a lock on a file, all session locks, or force-release any lock |
 | `preclaim_check` | Check lock status of files without locking |
 | `preclaim_status` | List all active locks and sessions |
 | `preclaim_read` | Signal you're reading a file (soft signal, 60s TTL) |

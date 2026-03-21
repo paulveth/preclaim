@@ -33,6 +33,7 @@ export function createServer(): { server: McpServer; session: SessionManager } {
     desc('preclaim_unlock'),
     {
       file_path: z.string().optional().describe('Specific file to unlock. Omit to release all locks.'),
+      force: z.boolean().optional().describe('Force-release locks held by any session'),
     },
     async (args) => handleUnlock(session, args),
   );

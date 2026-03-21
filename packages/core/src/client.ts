@@ -104,6 +104,13 @@ export class PreclaimClient {
     });
   }
 
+  async forceReleaseLocks(req: { project_id: string; file_path?: string }): Promise<ApiResponse<ReleaseResult>> {
+    return this.request<ReleaseResult>('/locks', {
+      method: 'DELETE',
+      body: JSON.stringify({ ...req, force: true }),
+    });
+  }
+
   async listLocks(projectId: string): Promise<ApiResponse<Lock[]>> {
     return this.request<Lock[]>(`/locks?project_id=${projectId}`);
   }

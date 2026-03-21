@@ -1,6 +1,6 @@
 {
   "name": "preclaim",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "AI File Coordination Layer — predictive file locking for AI coding agents",
   "type": "module",
   "bin": {

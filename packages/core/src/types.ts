@@ -149,7 +149,8 @@ export interface SessionRegisterRequest {
 export interface ReleaseRequest {
   project_id: string;
   file_path?: string;
-  session_id: string;
+  session_id?: string;
+  force?: boolean;
 }
 
 export interface ReleaseResult {

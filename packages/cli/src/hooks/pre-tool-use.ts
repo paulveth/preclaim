@@ -163,7 +163,7 @@ async function main() {
           `  Since: ${new Date(data.holder!.acquired_at).toLocaleTimeString()}`,
           `  Expires: ${new Date(data.holder!.expires_at).toLocaleTimeString()}`,
           '',
-          'Wait for the lock to expire or work on a different file.',
+          `To force-release: preclaim unlock ${relativePath} --force`,
         ].join('\n'),
       });
     }

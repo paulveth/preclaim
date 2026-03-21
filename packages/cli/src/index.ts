@@ -55,6 +55,7 @@ program
   .description(desc('unlock'))
   .option('-s, --session <id>', 'Session ID')
   .option('-a, --all', 'Release all locks for this session')
+  .option('-f, --force', 'Force-release locks held by any session')
   .action(unlockCommand);
 
 program

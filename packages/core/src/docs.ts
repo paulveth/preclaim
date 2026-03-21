@@ -77,8 +77,9 @@ export const cliCommands: DocCommand[] = [
     options: [
       { flags: '-s, --session <id>', description: 'Session ID' },
       { flags: '-a, --all', description: 'Release all locks for this session' },
+      { flags: '-f, --force', description: 'Force-release locks held by any session' },
     ],
-    example: 'preclaim unlock src/api/auth.ts',
+    example: 'preclaim unlock src/api/auth.ts --force',
   },
   {
     name: 'status',

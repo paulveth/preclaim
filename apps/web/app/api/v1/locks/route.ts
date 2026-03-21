@@ -62,13 +62,18 @@ export async function DELETE(req: NextRequest) {
     return Response.json({ error: parsed.error.flatten() }, { status: 400 });
   }
   const body = parsed.data;
+  const isForce = body.force === true;
+  const action = isForce ? 'force_release' as const : 'release' as const;
 
   // Get locks to release (for history logging)
   let selectQuery = auth.supabase
     .from('locks')
     .select('*')
-    .eq('project_id', body.project_id)
-    .eq('session_id', body.session_id);
+    .eq('project_id', body.project_id);
+
+  if (!isForce && body.session_id) {
+    selectQuery = selectQuery.eq('session_id', body.session_id);
+  }
 
   if (body.file_path) {
     selectQuery = selectQuery.eq('file_path', body.file_path);
@@ -77,11 +82,15 @@ export async function DELETE(req: NextRequest) {
   const { data: locksToRelease } = await selectQuery;
 
   // Look up session provider for history logging
-  const { data: session } = await auth.supabase
-    .from('sessions')
-    .select('provider')
-    .eq('id', body.session_id)
-    .single();
+  let provider = 'cli';
+  if (body.session_id) {
+    const { data: session } = await auth.supabase
+      .from('sessions')
+      .select('provider')
+      .eq('id', body.session_id)
+      .single();
+    provider = session?.provider ?? 'unknown';
+  }
 
   // Log releases to history
   if (locksToRelease && locksToRelease.length > 0) {
@@ -90,19 +99,22 @@ export async function DELETE(req: NextRequest) {
       file_path: l.file_path,
       user_id: l.user_id,
       session_id: l.session_id,
-      provider: session?.provider ?? 'unknown',
-      action: 'release' as const,
+      provider,
+      action,
     }));
 
     await auth.supabase.from('lock_history').insert(historyEntries);
   }
 
-  // Delete locks with exact count
+  // Delete locks with exact count (RLS enforces user_id = auth.uid() OR is_org_admin())
   let deleteQuery = auth.supabase
     .from('locks')
     .delete({ count: 'exact' })
-    .eq('project_id', body.project_id)
-    .eq('session_id', body.session_id);
+    .eq('project_id', body.project_id);
+
+  if (!isForce && body.session_id) {
+    deleteQuery = deleteQuery.eq('session_id', body.session_id);
+  }
 
   if (body.file_path) {
     deleteQuery = deleteQuery.eq('file_path', body.file_path);

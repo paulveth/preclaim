@@ -9,9 +9,13 @@ export const ClaimRequestSchema = z.object({
 
 export const ReleaseRequestSchema = z.object({
   project_id: z.string().uuid(),
-  session_id: z.string().min(1),
+  session_id: z.string().min(1).optional(),
   file_path: z.string().min(1).max(500).optional(),
-});
+  force: z.boolean().optional(),
+}).refine(
+  (data) => data.force || data.session_id,
+  { message: 'session_id is required unless force is true' },
+);
 
 export const BatchCheckRequestSchema = z.object({
   project_id: z.string().uuid(),
