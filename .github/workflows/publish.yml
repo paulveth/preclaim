@@ -33,7 +33,11 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @preclaim/db build && pnpm --filter @preclaim/core build
-      - run: pnpm --filter @preclaim/core publish --no-git-checks --access public
+      - name: Publish @preclaim/core
+        working-directory: packages/core
+        run: |
+          pnpm pack
+          npm publish *.tgz --access public
 
   publish-cli:
     if: always() && (inputs.package == 'cli' || inputs.package == 'all') && (needs.publish-core.result == 'success' || needs.publish-core.result == 'skipped')
@@ -51,7 +55,11 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @preclaim/db build && pnpm --filter @preclaim/core build && pnpm --filter preclaim build
-      - run: pnpm --filter preclaim publish --no-git-checks --access public
+      - name: Publish preclaim
+        working-directory: packages/cli
+        run: |
+          pnpm pack
+          npm publish *.tgz --access public
 
   publish-mcp:
     if: always() && (inputs.package == 'mcp' || inputs.package == 'all') && (needs.publish-core.result == 'success' || needs.publish-core.result == 'skipped')
@@ -69,4 +77,8 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @preclaim/db build && pnpm --filter @preclaim/core build && pnpm --filter @preclaim/mcp build
-      - run: pnpm --filter @preclaim/mcp publish --no-git-checks --access public
+      - name: Publish @preclaim/mcp
+        working-directory: packages/mcp
+        run: |
+          pnpm pack
+          npm publish *.tgz --access public
