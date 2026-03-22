@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 186 166" width="186" height="166">
+  <!-- Block cursor outline -->
+  <rect x="3" y="3" width="180" height="160" rx="18"
+        fill="none" stroke="#00e03c" stroke-width="3"/>
+
+  <!-- Keyhole outline -->
+  <path d="M 79 76 L 86 129 L 94 129 L 101 76 A 24 24 0 1 0 79 76 Z"
+        fill="none" stroke="#00e03c" stroke-width="3" stroke-linejoin="round"/>
+</svg>

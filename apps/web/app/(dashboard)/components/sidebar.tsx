@@ -49,6 +49,7 @@ export function Sidebar() {
     <aside className={styles.sidebar}>
       <div className={styles.logo}>
         <Link href="/">
+          <img src="/logo-mark.svg" alt="" className={styles.logoMark} />
           preclaim<span className={styles.logoDot}>_</span>
         </Link>
       </div>

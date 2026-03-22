@@ -47,6 +47,7 @@ export default function Home() {
       <nav className={styles.nav}>
         <div className={styles.navInner}>
           <a href="/" className={styles.logo}>
+            <img src="/logo-mark.svg" alt="" className={styles.logoMark} />
             preclaim<span className={styles.logoDot}>_</span>
           </a>
           <div className={styles.navLinks}>
@@ -292,6 +293,7 @@ export default function Home() {
       <footer className={styles.footer}>
         <div className={styles.footerInner}>
           <span className={styles.footerLogo}>
+            <img src="/logo-mark.svg" alt="" className={styles.logoMark} />
             preclaim<span className={styles.logoDot}>_</span>
           </span>
           <span className={styles.footerText}>
