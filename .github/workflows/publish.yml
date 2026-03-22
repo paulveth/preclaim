@@ -31,10 +31,21 @@ jobs:
         with:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
-      - run: npm install -g npm@latest
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @preclaim/db build && pnpm --filter @preclaim/core build
+      - name: Check if publish needed
+        id: check
+        run: |
+          LOCAL=$(node -p "require('./packages/core/package.json').version")
+          REMOTE=$(npm view @preclaim/core version 2>/dev/null || echo "NONE")
+          echo "needed=$( [ "$LOCAL" != "$REMOTE" ] && echo true || echo false )" >> "$GITHUB_OUTPUT"
+          echo "@preclaim/core: local=$LOCAL npm=$REMOTE"
+      - if: steps.check.outputs.needed == 'true'
+        run: npm install -g npm@latest
+      - if: steps.check.outputs.needed == 'true'
+        run: pnpm install --frozen-lockfile
+      - if: steps.check.outputs.needed == 'true'
+        run: pnpm --filter @preclaim/db build && pnpm --filter @preclaim/core build
       - name: Publish @preclaim/core
+        if: steps.check.outputs.needed == 'true'
         working-directory: packages/core
         run: |
           pnpm pack
@@ -54,10 +65,21 @@ jobs:
         with:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
-      - run: npm install -g npm@latest
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @preclaim/db build && pnpm --filter @preclaim/core build && pnpm --filter preclaim build
+      - name: Check if publish needed
+        id: check
+        run: |
+          LOCAL=$(node -p "require('./packages/cli/package.json').version")
+          REMOTE=$(npm view preclaim version 2>/dev/null || echo "NONE")
+          echo "needed=$( [ "$LOCAL" != "$REMOTE" ] && echo true || echo false )" >> "$GITHUB_OUTPUT"
+          echo "preclaim: local=$LOCAL npm=$REMOTE"
+      - if: steps.check.outputs.needed == 'true'
+        run: npm install -g npm@latest
+      - if: steps.check.outputs.needed == 'true'
+        run: pnpm install --frozen-lockfile
+      - if: steps.check.outputs.needed == 'true'
+        run: pnpm --filter @preclaim/db build && pnpm --filter @preclaim/core build && pnpm --filter preclaim build
       - name: Publish preclaim
+        if: steps.check.outputs.needed == 'true'
         working-directory: packages/cli
         run: |
           pnpm pack
@@ -77,10 +99,21 @@ jobs:
         with:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
-      - run: npm install -g npm@latest
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @preclaim/db build && pnpm --filter @preclaim/core build && pnpm --filter @preclaim/mcp build
+      - name: Check if publish needed
+        id: check
+        run: |
+          LOCAL=$(node -p "require('./packages/mcp/package.json').version")
+          REMOTE=$(npm view @preclaim/mcp version 2>/dev/null || echo "NONE")
+          echo "needed=$( [ "$LOCAL" != "$REMOTE" ] && echo true || echo false )" >> "$GITHUB_OUTPUT"
+          echo "@preclaim/mcp: local=$LOCAL npm=$REMOTE"
+      - if: steps.check.outputs.needed == 'true'
+        run: npm install -g npm@latest
+      - if: steps.check.outputs.needed == 'true'
+        run: pnpm install --frozen-lockfile
+      - if: steps.check.outputs.needed == 'true'
+        run: pnpm --filter @preclaim/db build && pnpm --filter @preclaim/core build && pnpm --filter @preclaim/mcp build
       - name: Publish @preclaim/mcp
+        if: steps.check.outputs.needed == 'true'
         working-directory: packages/mcp
         run: |
           pnpm pack
