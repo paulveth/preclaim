@@ -63,31 +63,34 @@ export function ActivityFeed({
     async (offset = 0, append = false) => {
       if (!project) return;
 
-      const params = new URLSearchParams({
-        project_id: project.id,
-        limit: String(pageSize),
-        offset: String(offset),
-      });
-      if (filter) params.set('action', filter);
+      try {
+        const params = new URLSearchParams({
+          project_id: project.id,
+          limit: String(pageSize),
+          offset: String(offset),
+        });
+        if (filter) params.set('action', filter);
 
-      const res = await fetchWithAuth(`/api/v1/activity?${params}`);
-      if (!res.ok) {
+        const res = await fetchWithAuth(`/api/v1/activity?${params}`);
+        if (!res.ok) {
+          setError('Failed to load activity');
+          return;
+        }
+
+        const { data } = await res.json();
+        if (append) {
+          setEntries((prev) => [...prev, ...(data ?? [])]);
+        } else {
+          setEntries(data ?? []);
+        }
+        setHasMore((data ?? []).length === pageSize);
+        setError(null);
+      } catch {
         setError('Failed to load activity');
+      } finally {
         setLoading(false);
         setLoadingMore(false);
-        return;
       }
-
-      const { data } = await res.json();
-      if (append) {
-        setEntries((prev) => [...prev, ...(data ?? [])]);
-      } else {
-        setEntries(data ?? []);
-      }
-      setHasMore((data ?? []).length === pageSize);
-      setError(null);
-      setLoading(false);
-      setLoadingMore(false);
     },
     [project, filter, pageSize, fetchWithAuth],
   );

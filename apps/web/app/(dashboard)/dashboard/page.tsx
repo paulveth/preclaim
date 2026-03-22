@@ -23,17 +23,22 @@ export default function DashboardOverview() {
   const fetchStats = useCallback(async () => {
     if (!project) return;
 
-    const res = await fetchWithAuth(`/api/v1/stats?project_id=${project.id}`);
-    if (!res.ok) {
-      setStatsError(true);
-      setStatsLoading(false);
-      return;
-    }
+    try {
+      const res = await fetchWithAuth(`/api/v1/stats?project_id=${project.id}`);
+      if (!res.ok) {
+        setStatsError(true);
+        setStatsLoading(false);
+        return;
+      }
 
-    const { data } = await res.json();
-    setStats(data);
-    setStatsError(false);
-    setStatsLoading(false);
+      const { data } = await res.json();
+      setStats(data);
+      setStatsError(false);
+    } catch {
+      setStatsError(true);
+    } finally {
+      setStatsLoading(false);
+    }
   }, [project, fetchWithAuth]);
 
   useEffect(() => {

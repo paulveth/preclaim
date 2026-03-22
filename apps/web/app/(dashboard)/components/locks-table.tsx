@@ -58,29 +58,34 @@ export function LocksTable({
   const fetchData = useCallback(async () => {
     if (!project) return;
 
-    const [locksRes, interestsRes] = await Promise.all([
-      supabase
-        .from('locks')
-        .select('*')
-        .eq('project_id', project.id)
-        .order('acquired_at', { ascending: false }),
-      supabase
-        .from('file_interests')
-        .select('*')
-        .eq('project_id', project.id)
-        .gt('expires_at', new Date().toISOString())
-        .order('created_at', { ascending: false }),
-    ]);
+    try {
+      const [locksRes, interestsRes] = await Promise.all([
+        supabase
+          .from('locks')
+          .select('*')
+          .eq('project_id', project.id)
+          .order('acquired_at', { ascending: false }),
+        supabase
+          .from('file_interests')
+          .select('*')
+          .eq('project_id', project.id)
+          .gt('expires_at', new Date().toISOString())
+          .order('created_at', { ascending: false }),
+      ]);
 
-    if (locksRes.error) {
-      setError(locksRes.error.message);
-      return;
+      if (locksRes.error) {
+        setError(locksRes.error.message);
+        return;
+      }
+
+      setLocks(locksRes.data ?? []);
+      setInterests(interestsRes.data ?? []);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load locks');
+    } finally {
+      setLoading(false);
     }
-
-    setLocks(locksRes.data ?? []);
-    setInterests(interestsRes.data ?? []);
-    setError(null);
-    setLoading(false);
   }, [project, supabase]);
 
   useEffect(() => {

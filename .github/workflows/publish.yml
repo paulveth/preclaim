@@ -8,10 +8,10 @@ on:
         required: true
         type: choice
         options:
+          - all
           - core
           - cli
           - mcp
-          - both
 
 permissions:
   contents: read
@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   publish-core:
-    if: inputs.package == 'core' || inputs.package == 'both'
+    if: inputs.package == 'core' || inputs.package == 'all'
     runs-on: ubuntu-latest
     environment: npm
     steps:
@@ -38,7 +38,7 @@ jobs:
         working-directory: packages/core
 
   publish-cli:
-    if: inputs.package == 'cli' || (inputs.package == 'both' && always())
+    if: always() && (inputs.package == 'cli' || inputs.package == 'all') && (needs.publish-core.result == 'success' || needs.publish-core.result == 'skipped')
     needs: [publish-core]
     runs-on: ubuntu-latest
     environment: npm
@@ -60,7 +60,8 @@ jobs:
           npm publish *.tgz --access public
 
   publish-mcp:
-    if: inputs.package == 'mcp'
+    if: always() && (inputs.package == 'mcp' || inputs.package == 'all') && (needs.publish-core.result == 'success' || needs.publish-core.result == 'skipped')
+    needs: [publish-core]
     runs-on: ubuntu-latest
     environment: npm
     steps:
