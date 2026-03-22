@@ -77,20 +77,38 @@ jobs:
 
       - name: Check for unapplied migrations
         env:
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          if [ -z "$SUPABASE_DB_URL" ]; then
-            echo "::warning::SUPABASE_DB_URL not configured — skipping migration check"
-            echo "Migration check skipped (SUPABASE_DB_URL not set)." >> "$GITHUB_STEP_SUMMARY"
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "::warning::SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not configured — skipping migration check"
+            echo "Migration check skipped (secrets not set)." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
 
           # Get local migration versions (timestamp prefix)
           LOCAL_VERSIONS=$(ls packages/db/supabase/migrations/ | sed 's/_.*//' | sort)
 
-          # Get applied migration versions from production
-          APPLIED_VERSIONS=$(psql "$SUPABASE_DB_URL" -t -A -c \
-            "SELECT version FROM supabase_migrations.schema_migrations ORDER BY version")
+          # Get applied migration versions via RPC
+          APPLIED_JSON=$(curl -s \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -X POST "$SUPABASE_URL/rest/v1/rpc/get_applied_migrations")
+
+          # Check for error
+          if echo "$APPLIED_JSON" | grep -q '"code"'; then
+            echo "::warning::Failed to query migrations: $APPLIED_JSON"
+            echo "Migration check failed (RPC error)." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          # Extract versions from JSON array
+          APPLIED_VERSIONS=$(echo "$APPLIED_JSON" | python3 -c "
+          import json,sys
+          data=json.load(sys.stdin)
+          for row in data:
+              print(row['version'])
+          " | sort)
 
           # Find unapplied migrations
           UNAPPLIED=$(comm -23 <(echo "$LOCAL_VERSIONS") <(echo "$APPLIED_VERSIONS"))
