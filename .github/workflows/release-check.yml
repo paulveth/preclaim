@@ -1,0 +1,116 @@
+name: Release Check
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  check-npm-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check for unpublished versions
+        id: check
+        run: |
+          NEEDS_PUBLISH=false
+          GAPS=""
+
+          check_package() {
+            local name=$1
+            local dir=$2
+            local local_version
+            local npm_version
+
+            local_version=$(node -p "require('./$dir/package.json').version")
+            npm_version=$(npm view "$name" version 2>/dev/null || echo "NOT_FOUND")
+
+            if [ "$local_version" != "$npm_version" ]; then
+              echo "::warning::$name: local=$local_version npm=$npm_version"
+              GAPS="${GAPS}| $name | $local_version | $npm_version |\n"
+              NEEDS_PUBLISH=true
+            else
+              echo "$name: $local_version (up to date)"
+            fi
+          }
+
+          check_package "@preclaim/core" "packages/core"
+          check_package "preclaim" "packages/cli"
+          check_package "@preclaim/mcp" "packages/mcp"
+
+          echo "needs_publish=$NEEDS_PUBLISH" >> "$GITHUB_OUTPUT"
+
+          if [ "$NEEDS_PUBLISH" = "true" ]; then
+            {
+              echo "## npm Version Gaps Detected"
+              echo ""
+              echo "| Package | Local | npm |"
+              echo "|---------|-------|-----|"
+              echo -e "$GAPS"
+              echo "Triggering publish workflow..."
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "All packages are up to date with npm." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Trigger publish workflow
+        if: steps.check.outputs.needs_publish == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run publish.yml --field package=all
+          echo "Publish workflow triggered." >> "$GITHUB_STEP_SUMMARY"
+
+  check-migrations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for unapplied migrations
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::warning::SUPABASE_DB_URL not configured — skipping migration check"
+            echo "Migration check skipped (SUPABASE_DB_URL not set)." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          # Get local migration versions (timestamp prefix)
+          LOCAL_VERSIONS=$(ls packages/db/supabase/migrations/ | sed 's/_.*//' | sort)
+
+          # Get applied migration versions from production
+          APPLIED_VERSIONS=$(psql "$SUPABASE_DB_URL" -t -A -c \
+            "SELECT version FROM supabase_migrations.schema_migrations ORDER BY version")
+
+          # Find unapplied migrations
+          UNAPPLIED=$(comm -23 <(echo "$LOCAL_VERSIONS") <(echo "$APPLIED_VERSIONS"))
+
+          if [ -n "$UNAPPLIED" ]; then
+            echo "::warning::Unapplied migrations detected"
+
+            {
+              echo "## Unapplied Migrations"
+              echo ""
+              echo "The following migrations exist locally but have not been applied to production:"
+              echo ""
+
+              while IFS= read -r version; do
+                filename=$(ls packages/db/supabase/migrations/${version}_* 2>/dev/null)
+                echo "- \`$(basename "$filename")\`"
+              done <<< "$UNAPPLIED"
+
+              echo ""
+              echo "> Run \`supabase db push --linked\` from packages/db/ to apply."
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "All migrations are applied to production." >> "$GITHUB_STEP_SUMMARY"
+          fi
