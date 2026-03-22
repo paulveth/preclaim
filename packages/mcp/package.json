@@ -1,6 +1,6 @@
 {
   "name": "@preclaim/mcp",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "MCP server for Preclaim — AI file coordination for any MCP-compatible agent",
   "type": "module",
   "bin": {
