@@ -1,3 +1,4 @@
+import { createRequire } from 'node:module';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { getToolDescription } from '@preclaim/core';
@@ -8,6 +9,9 @@ import { handleCheck } from './tools/check.js';
 import { handleStatus } from './tools/status.js';
 import { handleRead } from './tools/read.js';
 
+const require = createRequire(import.meta.url);
+const { version } = require('../package.json') as { version: string };
+
 const desc = getToolDescription;
 
 export function createServer(): { server: McpServer; session: SessionManager } {
@@ -15,7 +19,7 @@ export function createServer(): { server: McpServer; session: SessionManager } {
 
   const server = new McpServer({
     name: 'preclaim',
-    version: '0.1.0',
+    version,
   });
 
   server.tool(

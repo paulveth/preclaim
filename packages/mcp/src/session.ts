@@ -1,3 +1,4 @@
+import { createRequire } from 'node:module';
 import { randomUUID } from 'node:crypto';
 import {
   PreclaimClient,
@@ -7,6 +8,9 @@ import {
   type PreclaimCredentials,
 } from '@preclaim/core';
 import { loadContext, type PreclaimContext } from './lib/context.js';
+
+const require = createRequire(import.meta.url);
+const { version: LOCAL_VERSION } = require('../package.json') as { version: string };
 
 const HEARTBEAT_INTERVAL_MS = 60_000;
 const MAX_CONSECUTIVE_FAILURES = 5;
@@ -20,6 +24,7 @@ export class SessionManager {
   private heartbeatInterval: ReturnType<typeof setInterval> | null = null;
   private consecutiveFailures = 0;
   private initPromise: Promise<void> | null = null;
+  updateNotice: string | null = null;
 
   get id(): string | null {
     return this.sessionId;
@@ -63,6 +68,24 @@ export class SessionManager {
     }
 
     this.startHeartbeat();
+
+    // Non-blocking version check
+    this.checkForUpdate();
+  }
+
+  private async checkForUpdate(): Promise<void> {
+    try {
+      const res = await fetch('https://registry.npmjs.org/@preclaim/mcp/latest', {
+        signal: AbortSignal.timeout(2000),
+      });
+      if (!res.ok) return;
+      const { version: latest } = await res.json() as { version: string };
+      if (latest !== LOCAL_VERSION) {
+        this.updateNotice = `Update available: @preclaim/mcp ${LOCAL_VERSION} → ${latest}. Run: npm install -g @preclaim/mcp@latest`;
+      }
+    } catch {
+      // Non-blocking — ignore failures
+    }
   }
 
   private startHeartbeat(): void {

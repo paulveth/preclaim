@@ -55,6 +55,8 @@ Full reference at [preclaim.dev/docs](https://preclaim.dev/docs) — CLI command
 | `preclaim check <files...>` | Check lock status for specific files |
 | `preclaim whoami` | Display current user info |
 | `preclaim config` | View/modify project configuration |
+| `preclaim sessions` | Show active sessions for this project |
+| `preclaim logs` | Show recent lock activity for this project |
 | `preclaim info` | Show project ID, backend, dashboard URL, config, and version |
 | `preclaim open` | Open the Preclaim dashboard in your browser |
 | `preclaim doctor` | Health checks: backend, credentials, hooks, heartbeat |
