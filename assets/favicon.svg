@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <mask id="k">
+      <rect width="32" height="32" fill="white"/>
+      <circle cx="16" cy="11" r="5" fill="black"/>
+      <polygon points="13,14 19,14 17.5,23 14.5,23" fill="black"/>
+    </mask>
+  </defs>
+
+  <rect x="2" y="2" width="28" height="25" rx="4" fill="#00e03c" mask="url(#k)"/>
+</svg>

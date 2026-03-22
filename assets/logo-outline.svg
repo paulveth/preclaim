@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 290" width="400" height="290">
+  <rect width="400" height="290" fill="#000000"/>
+
+  <!-- Block cursor outline -->
+  <rect x="110" y="40" width="180" height="160" rx="18"
+        fill="none" stroke="#00e03c" stroke-width="3"/>
+
+  <!-- Keyhole: single continuous path — circle arc + straight trapezoid -->
+  <path d="M 189 116 L 196 169 L 204 169 L 211 116 A 24 24 0 1 0 189 116 Z"
+        fill="none" stroke="#00e03c" stroke-width="3" stroke-linejoin="round"/>
+
+  <!-- Wordmark -->
+  <text x="200" y="238" text-anchor="middle"
+        font-family="'SF Mono','Fira Code','JetBrains Mono','Source Code Pro','Courier New',monospace"
+        font-size="28" font-weight="500">
+    <tspan fill="#f5f5f7">preclaim</tspan><tspan fill="#00e03c">_</tspan>
+  </text>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 160" width="180" height="160">
+  <defs>
+    <mask id="keyhole">
+      <rect width="180" height="160" fill="white"/>
+      <circle cx="90" cy="55" r="24" fill="black"/>
+      <polygon points="78,71 102,71 94,129 86,129" fill="black"/>
+    </mask>
+  </defs>
+
+  <!-- Solid mark, transparent background -->
+  <rect width="180" height="160" rx="18" fill="#00e03c" mask="url(#keyhole)"/>
+</svg>
