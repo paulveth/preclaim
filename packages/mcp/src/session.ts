@@ -25,9 +25,17 @@ export class SessionManager {
   private consecutiveFailures = 0;
   private initPromise: Promise<void> | null = null;
   updateNotice: string | null = null;
+  private updateNoticeShown = false;
 
   get id(): string | null {
     return this.sessionId;
+  }
+
+  /** Returns the update notice once, then null for subsequent calls. */
+  consumeUpdateNotice(): string | null {
+    if (this.updateNoticeShown || !this.updateNotice) return null;
+    this.updateNoticeShown = true;
+    return this.updateNotice;
   }
 
   async ensureInitialized(): Promise<PreclaimContext & { sessionId: string }> {

@@ -47,10 +47,6 @@ export async function handleStatus(session: SessionManager) {
     }
   }
 
-  if (session.updateNotice) {
-    lines.push('', session.updateNotice);
-  }
-
   return {
     content: [{ type: 'text' as const, text: lines.join('\n') }],
   };
