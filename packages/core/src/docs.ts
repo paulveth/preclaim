@@ -198,7 +198,7 @@ export const hooks: DocHook[] = [
   {
     name: 'PreToolUse',
     event: 'Before every tool call',
-    description: 'The gatekeeper. Intercepts Edit/Write/MultiEdit to acquire file locks before changes, and Read to register soft signals. Allows the tool to proceed if the lock is acquired, blocks with a warning if another session holds the lock.',
+    description: 'The gatekeeper. Intercepts Edit/Write/MultiEdit to acquire file locks before changes, and Read to register soft signals. Discovers config from both the working directory and the file\'s directory — so locks work even when the session starts from a parent directory. Allows the tool to proceed if the lock is acquired, blocks with a warning if another session holds the lock.',
   },
   {
     name: 'PostToolUse',
@@ -208,7 +208,7 @@ export const hooks: DocHook[] = [
   {
     name: 'SessionStart',
     event: 'When a Claude Code session starts',
-    description: 'Registers the session with Preclaim, starts the heartbeat daemon for automatic lock expiry, and injects a system message with current lock status.',
+    description: 'Registers the session with Preclaim, starts the heartbeat daemon for automatic lock expiry, and injects a system message with current lock status. Warns authenticated users when no .preclaim.json is found in the current directory.',
   },
   {
     name: 'Stop',

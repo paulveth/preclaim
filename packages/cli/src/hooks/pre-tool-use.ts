@@ -35,8 +35,13 @@ async function main() {
       return; // No file path = allow
     }
 
-    // Load config
-    const found = await findConfig();
+    // Load config — try cwd first, then file's directory
+    // This handles the case where cwd is a parent dir but the file is inside a Preclaim project
+    let found = await findConfig();
+    if (!found) {
+      const fileDir = dirname(resolve(filePath));
+      found = await findConfig(fileDir);
+    }
     if (!found) {
       return; // No config = allow (not a preclaim project)
     }

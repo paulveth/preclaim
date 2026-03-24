@@ -76,6 +76,10 @@ Preclaim integrates with [Claude Code](https://docs.anthropic.com/en/docs/claude
 | **PostToolUse** | Agent runs `git commit` | Auto-releases all session locks |
 | **SessionStart** | New Claude Code session | Registers session, starts heartbeat daemon |
 
+Config discovery works from both the working directory and the file's directory. This means locks work correctly even when a session starts from a parent directory — as long as the file being edited is inside a project with `.preclaim.json`.
+
+Authenticated users who start a session outside a configured project get a warning that file locking is not active.
+
 The **heartbeat daemon** runs in the background, extending lock TTLs every 60 seconds so locks don't expire during long sessions.
 
 ### MCP Server

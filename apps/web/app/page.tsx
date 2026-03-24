@@ -68,6 +68,9 @@ export default function Home() {
             >
               GitHub
             </a>
+            <a href="/dashboard" className={styles.navLink}>
+              Dashboard
+            </a>
             <a href="#get-started" className={styles.navCta}>
               Get Started
             </a>

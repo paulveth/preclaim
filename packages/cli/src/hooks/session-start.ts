@@ -15,7 +15,16 @@ async function main() {
     const input = await readHookInput();
 
     const found = await findConfig();
-    if (!found) return;
+    if (!found) {
+      // No config, but if user has credentials they're a Preclaim user — warn them
+      const creds = await loadCredentials();
+      if (creds) {
+        writeHookOutput({
+          systemMessage: '[Preclaim] No .preclaim.json found in this directory. File locking is not active. Run `preclaim init` to enable, or start your session from within a configured project.',
+        });
+      }
+      return;
+    }
 
     let creds = await loadCredentials();
     if (!creds) {
