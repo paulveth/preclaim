@@ -52,6 +52,8 @@ export function LocksTable({
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [releaseError, setReleaseError] = useState<string | null>(null);
+  const [releasingId, setReleasingId] = useState<string | null>(null);
   const supabase = createBrowserSupabase();
   const intervalRef = useRef<ReturnType<typeof setInterval>>(null);
 
@@ -143,19 +145,30 @@ export function LocksTable({
   }, []);
 
   const handleForceRelease = async (lock: Lock) => {
-    const res = await fetchWithAuth('/api/v1/locks/force-release', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ lock_id: lock.id }),
-    });
+    setReleasingId(lock.id);
+    setReleaseError(null);
 
-    if (!res.ok) {
-      const { error: msg } = await res.json().catch(() => ({ error: 'Failed to release lock' }));
-      setError(msg ?? 'Failed to release lock');
-      return;
+    try {
+      const res = await fetchWithAuth('/api/v1/locks/force-release', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lock_id: lock.id }),
+      });
+
+      if (!res.ok) {
+        const { error: msg } = await res.json().catch(() => ({ error: 'Failed to release lock' }));
+        setReleaseError(msg ?? 'Failed to release lock');
+        setTimeout(() => setReleaseError(null), 5000);
+        return;
+      }
+
+      await fetchData();
+    } catch {
+      setReleaseError('Failed to release lock');
+      setTimeout(() => setReleaseError(null), 5000);
+    } finally {
+      setReleasingId(null);
     }
-
-    await fetchData();
   };
 
   const filteredLocks = search
@@ -199,6 +212,9 @@ export function LocksTable({
 
   return (
     <div>
+      {releaseError && (
+        <div className={styles.error}>{releaseError}</div>
+      )}
       {showSearch && (
         <div className={styles.searchBar}>
           <input
@@ -251,8 +267,9 @@ export function LocksTable({
                     <button
                       className={styles.releaseButton}
                       onClick={() => handleForceRelease(lock)}
+                      disabled={releasingId === lock.id}
                     >
-                      Release
+                      {releasingId === lock.id ? 'Releasing…' : 'Release'}
                     </button>
                   </td>
                 )}
